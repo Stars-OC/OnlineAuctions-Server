@@ -26,6 +26,6 @@ public @interface RequestPage {
      * 每页数量
      * @return int
      */
-    int limit() default 10;
+    int size() default 10;
 
 }

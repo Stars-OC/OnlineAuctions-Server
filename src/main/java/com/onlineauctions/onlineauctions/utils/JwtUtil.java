@@ -39,7 +39,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 // 设置签发者
-                .setIssuer("zelu")
+                .setIssuer("auctions")
                 // 设置签发时间
                 .setIssuedAt(new Date(now))
                 // 设置过期时间
@@ -132,17 +132,5 @@ public class JwtUtil {
         return new String(Base64.getDecoder().decode(base64));
     }
 
-    public static Long getDeptId(String jwt) {
-
-        String payload = getPayload(jwt);
-
-        try {
-            JsonNode node = mapper.readTree(payload);
-            return node.get("deptId").longValue();
-        } catch (JacksonException e) {
-            log.error("获取deptId失败从 token: {}",jwt);
-            return null;
-        }
-    }
 
 }

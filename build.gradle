@@ -43,6 +43,9 @@ dependencies {
     // 缓存相关
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // AOP切面权限控制
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.1.3'
+
     // 鉴权和参数校验
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.1.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
