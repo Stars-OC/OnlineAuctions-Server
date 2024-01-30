@@ -1,6 +1,8 @@
 package com.onlineauctions.onlineauctions.controller;
 
+import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.UserService;
 import com.onlineauctions.onlineauctions.service.auth.JwtService;
@@ -27,6 +29,7 @@ public class UserController {
      * @return 刷新结果
      */
     @GetMapping("/refresh_token")
+    @Permission(Role.ADMIN)
     public Result<String> refreshToken(@RequestHeader String token){
 
         return Result.success("刷新token成功",jwtService.uploadJwtByToken(token));

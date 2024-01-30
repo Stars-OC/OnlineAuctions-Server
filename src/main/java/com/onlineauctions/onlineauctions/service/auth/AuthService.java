@@ -3,6 +3,7 @@ package com.onlineauctions.onlineauctions.service.auth;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
+import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -101,6 +102,9 @@ public class AuthService {
         if (findUsername(username) == null){
 
             userMapper.insert(user);
+            // 设置默认角色为普通用户
+            user.setRole(Role.USER.getRole());
+            log.info("用户 {} 注册成功", username);
 
             String jwt = jwtService.createJwt(user);
             return jwt;
