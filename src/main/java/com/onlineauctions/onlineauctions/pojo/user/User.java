@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
+import java.math.BigDecimal;
+
 
 /**
  * 用户类
@@ -44,6 +46,12 @@ public class User {
 
     @TableField(updateStrategy = FieldStrategy.NEVER)
     private Integer role;
+
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    private BigDecimal money;
+
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    private BigDecimal fund;
 
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
