@@ -35,7 +35,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
 
     // 文件存储相关
-    implementation 'io.github.thciwei:x-file-storage-spring:2.1.0'
+    implementation 'io.github.thciwei:x-file-storage-spring:2.4.1-RELEASE'
 
     // 消息队列
     implementation 'org.springframework.boot:spring-boot-starter-amqp'

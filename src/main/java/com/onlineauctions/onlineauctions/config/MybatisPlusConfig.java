@@ -32,6 +32,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
+        this.setFieldValByName("updateAt", System.currentTimeMillis()/1000, metaObject);
         this.setFieldValByName("createAt", System.currentTimeMillis()/1000, metaObject);
         // 将密码进行填充
         this.setFieldValByName("password", AesUtil.DEFAULT_PASSWORD , metaObject);
@@ -40,6 +41,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
+        this.setFieldValByName("updateAt", System.currentTimeMillis()/1000, metaObject);
     }
 
 

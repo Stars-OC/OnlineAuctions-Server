@@ -23,7 +23,7 @@ public class RequestTokenResolver implements HandlerMethodArgumentResolver {
      * 添加@RestController中的参数解析方法。
      * 解析header中的token，并解析出各种对象对象。
      *
-     * @return 解析后的值 User/School/Company
+     * @return 解析后的值 User/username
      * @throws Exception 如果解析过程中发生异常
      */
     @Override

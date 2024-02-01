@@ -40,6 +40,9 @@ public class RequestPageResolver implements HandlerMethodArgumentResolver {
         String limit = webRequest.getParameter("limit");
         pageInfo.setPageSize(judge(limit,annotation.size()));
 
+        String filter = webRequest.getParameter("filter");
+        if (!StringUtils.isEmpty(filter)) pageInfo.setFilter(filter);
+
         // 返回修改后的整型数组
         return pageInfo;
     }

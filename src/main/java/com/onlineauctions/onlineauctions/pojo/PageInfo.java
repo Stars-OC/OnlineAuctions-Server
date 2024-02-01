@@ -5,9 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class PageInfo {
+
     private int pageNum;
     private int pageSize;
+    private String filter = "";
+
+    public PageInfo(int pageNum, int pageSize) {
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+    }
 }

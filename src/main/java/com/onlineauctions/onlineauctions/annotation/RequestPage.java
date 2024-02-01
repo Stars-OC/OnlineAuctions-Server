@@ -28,4 +28,6 @@ public @interface RequestPage {
      */
     int size() default 10;
 
+    String filter() default "";
+
 }
