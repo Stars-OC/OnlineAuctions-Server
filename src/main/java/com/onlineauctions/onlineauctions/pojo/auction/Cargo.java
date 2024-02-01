@@ -37,9 +37,9 @@ public class Cargo {
     @NotNull(message = "加价幅度不能为空")
     private BigDecimal additionalPrice;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @TableField(insertStrategy = FieldStrategy.NEVER)
     private Long startTime;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @TableField(insertStrategy = FieldStrategy.NEVER)
     private Long endTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

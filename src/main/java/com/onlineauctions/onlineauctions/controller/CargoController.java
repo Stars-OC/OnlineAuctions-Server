@@ -9,7 +9,6 @@ import com.onlineauctions.onlineauctions.pojo.Result;
 import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.service.CargoService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -33,11 +32,11 @@ public class CargoController {
      */
     @PostMapping("/add")
     @Permission(Role.USER)
-    public Result<String> addCargo(@Validated @RequestBody Cargo cargo, @RequestToken("username") Long username){
+    public Result<Cargo> addCargo(@Validated @RequestBody Cargo cargo, @RequestToken("username") Long username){
         // 设置cargo的卖家为username
         cargo.setSeller(username);
         // 调用cargoService的addCargo方法，添加cargo
-        return cargoService.addCargo(cargo) ? Result.success(cargo.toString()) : Result.failure();
+        return cargoService.addCargo(cargo) ? Result.success("添加成功",cargo) : Result.failure();
     }
 
     /**
@@ -55,7 +54,7 @@ public class CargoController {
         // 调用cargoService的updateCargo方法，更新cargo
         Integer message = cargoService.updateCargo(cargo);
         // 返回更新结果
-        return message != null ? Result.success(cargo.toString()) : Result.failure("未知错误");
+        return message != null ? Result.success("更新成功") : Result.failure("未知错误");
     }
 
     /**
@@ -73,16 +72,38 @@ public class CargoController {
     }
 
     /**
-     * 获取cargo列表
+     * 获取 已发布的 拍卖列表
      *
      * @param pageInfo 分页信息
      * @return 返回Result对象，其中包含分页列表信息
      */
-    @GetMapping("/list")
+    @GetMapping("/published/list")
     public Result<PageList<Cargo>> cargoList(@RequestPage PageInfo pageInfo){
         // 调用cargoService的cargoList方法，获取cargo列表
-        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter());
+        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),true);
         // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
         return pageList != null? Result.success(pageList) : Result.failure();
+    }
+
+
+    @GetMapping("/audit/list")
+    @Permission(Role.CARGO_ADMIN)
+    public Result<PageList<Cargo>> cargoAuditList(@RequestPage PageInfo pageInfo){
+        // 调用cargoService的cargoList方法，获取cargo列表
+        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),false);
+        // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
+        return pageList != null? Result.success(pageList) : Result.failure();
+    }
+
+    @GetMapping("/audit/{cargo}")
+    @Permission(Role.CARGO_ADMIN)
+    public Result<String> auditCargo(@PathVariable Long cargo,boolean audit){
+        return cargoService.auditCargo(cargo,audit) ? Result.success("审核成功") : Result.failure("未知错误");
+    }
+
+    @PostMapping("/audit/update")
+    @Permission(Role.CARGO_ADMIN)
+    public Result<Cargo> updateCargoStatus(@Validated @RequestBody Cargo cargo){
+        return cargoService.updateCargoByAdmin(cargo) ? Result.success("修改成功") : Result.failure("未知错误");
     }
 }

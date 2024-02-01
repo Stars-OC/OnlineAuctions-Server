@@ -4,8 +4,10 @@ import lombok.Getter;
 
 public enum CargoStatus {
 
-    ERROR(-1,"未知错误"),
+    ERROR(-2,"未知错误"),
 
+    FAILED_AUDIT(-1,"审核失败"),
+    
     AUDIT(0,"正在审核中"),
 
     PUBLISHED(1,"已发布"),

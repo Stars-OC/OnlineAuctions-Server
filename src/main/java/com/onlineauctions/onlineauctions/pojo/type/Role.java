@@ -8,6 +8,15 @@ public enum Role {
      * 普通用户
      */
     USER(0),
+
+    /**
+     * 拍卖物品管理员
+     */
+    CARGO_ADMIN(3),
+
+    /**
+     * 管理员
+     */
     ADMIN(5),
     ;
 

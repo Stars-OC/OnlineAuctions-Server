@@ -44,6 +44,7 @@ create table cargo
 );
 
 create index idx_cargo_id on cargo (cargo_id);
+create index idx_status on cargo (status);
 create index idx_time on cargo (start_time);
 
 # 拍卖记录
