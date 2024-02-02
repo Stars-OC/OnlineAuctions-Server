@@ -7,6 +7,10 @@ spring:
     username: guest
     password: guest
     virtual-host: /
+    #这个配置是保证提供者确保消息推送到交换机中，不管成不成功，都会回调
+    publisher-confirm-type: correlated
+    #保证交换机能把消息推送到队列中
+    publisher-returns: true
   profiles:
     active: dev
   # 文件大小适配

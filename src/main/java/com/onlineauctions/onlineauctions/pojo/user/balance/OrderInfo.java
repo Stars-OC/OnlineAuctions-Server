@@ -1,17 +1,17 @@
 package com.onlineauctions.onlineauctions.pojo.user.balance;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @TableName("order_info")
 public class OrderInfo {
+    @TableId(type = IdType.AUTO)
     private Long orderId;
     private Long cargoId;
     private String title;
@@ -21,5 +21,5 @@ public class OrderInfo {
     private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
-    private Long startAt;
+    private Long createAt;
 }
