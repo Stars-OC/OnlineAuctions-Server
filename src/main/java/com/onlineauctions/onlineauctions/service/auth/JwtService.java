@@ -16,6 +16,9 @@ public class JwtService {
     @Value("${user.verifyTime}")
     private int verifyTime;
 
+    // 后面进行区分
+    private final String prefix = "token:";
+
     @Autowired
     private StringRedisTemplate redis;
 
@@ -87,5 +90,15 @@ public class JwtService {
      */
     public void deleteJwtByUsername(String username){
         redis.opsForValue().getOperations().delete(username);
+    }
+
+    /**
+     * 根据用户名获取JWT
+     *
+     * @param username 用户名
+     * @return JWT字符串
+     */
+    public String getJwtByUsername(String username) {
+        return redis.opsForValue().get(username);
     }
 }

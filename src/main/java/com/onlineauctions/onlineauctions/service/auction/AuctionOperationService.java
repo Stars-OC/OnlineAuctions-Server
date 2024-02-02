@@ -5,6 +5,7 @@ import com.onlineauctions.onlineauctions.mapper.AuctionMapper;
 import com.onlineauctions.onlineauctions.mapper.CargoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,4 +18,6 @@ public class AuctionOperationService {
     private final AuctionMapper auctionMapper;
 
     private final CargoMapper cargoMapper;
+
+    private final StringRedisTemplate redisTemplate;
 }

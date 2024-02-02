@@ -47,13 +47,6 @@ public class User {
     @TableField(updateStrategy = FieldStrategy.NEVER)
     private Integer role;
 
-    @TableField(updateStrategy = FieldStrategy.NEVER)
-    private BigDecimal money;
-
-    @TableField(updateStrategy = FieldStrategy.NEVER)
-    private BigDecimal fund;
-
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
     private Long createAt;

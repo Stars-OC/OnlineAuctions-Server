@@ -3,6 +3,7 @@ package com.onlineauctions.onlineauctions.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineauctions.onlineauctions.pojo.Result;
 import com.onlineauctions.onlineauctions.pojo.type.ResultCode;
+import com.onlineauctions.onlineauctions.service.auth.JwtService;
 import com.onlineauctions.onlineauctions.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -21,7 +22,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     @Autowired
-    private StringRedisTemplate redis;
+    private JwtService jwtService;
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
@@ -68,7 +69,7 @@ public class LoginFilter implements Filter {
 
             String username = String.valueOf(claims.get("username"));
 
-            String oldToken = redis.opsForValue().get(username);
+            String oldToken = jwtService.getJwtByUsername(username);
 
             if (oldToken.equals(token)) {
                 // 放行请求，继续处理

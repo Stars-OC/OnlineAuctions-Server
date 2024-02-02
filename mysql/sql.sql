@@ -11,8 +11,6 @@ create table user
     password   char(100)                           not null,
     description varchar(255) default null        ,
     avatar_url varchar(255) default null         ,
-    money decimal(18,2) DEFAULT '0.00' COMMENT '账户余额',
-    fund decimal(18,2) DEFAULT '0.00' COMMENT '拍卖额度',
     role       int        default 0    COMMENT '权限等级' not null,
     create_at  bigint   not null comment '创建时间/秒级',
     deleted    tinyint(1) default 0  comment '是否被删除' not null
@@ -21,6 +19,47 @@ create table user
 
 create index idx_username on user (username);
 create index idx_time on user (create_at);
+
+# 用户钱包
+create table wallet
+(
+
+    username BIGINT  primary key      not null,
+    money decimal(18,2) DEFAULT '0.00' COMMENT '账户余额',
+    fund decimal(18,2) DEFAULT '0.00' COMMENT '拍卖额度',
+    update_at bigint   not null comment '更新时间/秒级'
+
+);
+
+# 用户订单
+create table `order`
+(
+    order_id BIGINT primary key      not null,
+    username BIGINT  not null,
+    create_at bigint   not null comment '创建时间/秒级',
+    deleted    tinyint(1) default 0  comment '是否被删除' not null
+);
+
+create index idx_username on `order` (username);
+
+# 订单信息
+create table order_info
+(
+    order_id BIGINT auto_increment primary key      not null,
+    title char(64)       comment '订单标题'          not null,
+    description text default null comment '订单描述',
+    type       int        default 0    COMMENT '订单类型' not null,
+    balance   decimal(18,2) DEFAULT '0.00' COMMENT '订单金额',
+    start_at bigint   not null comment '成交时间/秒级',
+    cargo_id BIGINT   not null comment '物品id',
+    status   int        default 0    COMMENT '状态' not null,
+    deleted tinyint(1) default 0  comment '是否被删除' not null
+);
+
+create index idx_status on order_info (status);
+create index idx_time on order_info (start_at);
+create index idx_seller on order_info (seller);
+create index idx_cargo on order_info (cargo_id);
 
 # 物品
 create table cargo
