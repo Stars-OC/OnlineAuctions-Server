@@ -1,7 +1,6 @@
 package com.onlineauctions.onlineauctions.pojo.auction;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -15,16 +14,22 @@ public class Auction {
     @TableId(type = IdType.AUTO)
     private Long auctionId;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @NotNull(message = "拍卖物品id不能为空")
     private Long cargoId;
 
-    @NotNull(message = "买家id不能为空")
-    private Long bidder;
+    @NotNull(message = "起拍价不能为空")
+    private BigDecimal startingPrice;
 
-    @NotNull(message = "加价不能为空")
-    private BigDecimal price;
+    @NotNull(message = "加价幅度不能为空")
+    private BigDecimal additionalPrice;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
-    private Long createAt;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private BigDecimal hammerPrice;
+
+    private Long startTime;
+
+    private Long endTime;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer status;
 }

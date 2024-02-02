@@ -1,18 +1,91 @@
 package com.onlineauctions.onlineauctions.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.onlineauctions.onlineauctions.mapper.AuctionLogMapper;
 import com.onlineauctions.onlineauctions.mapper.AuctionMapper;
+import com.onlineauctions.onlineauctions.mapper.CargoMapper;
+import com.onlineauctions.onlineauctions.pojo.PageList;
+import com.onlineauctions.onlineauctions.pojo.auction.Auction;
+import com.onlineauctions.onlineauctions.pojo.auction.AuctionLog;
+import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
+import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
+import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AuctionService {
 
+    private final AuctionLogMapper auctionLogMapper;
+
     private final AuctionMapper auctionMapper;
 
-    private final CargoService cargoService;
+    private final CargoMapper cargoMapper;
 
-    private final UserService userService;
+
+    /**
+     * 获取拍卖列表
+     *
+     * @param pageNum 当前页码
+     * @param pageSize 每页数量
+     * @param filter 过滤条件
+     * @param published 是否只查询已发布的拍卖
+     * @return 拍卖列表
+     */
+    public PageList<Auction> auctionList(int pageNum, int pageSize, String filter, boolean published) {
+        // 创建查询条件
+        QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
+        // 过滤条件
+        if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
+        // 查询已发布 和 拍卖的
+        if (published) {
+            queryWrapper.between("status", AuctionStatus.PUBLISHED.getStatus(), AuctionStatus.SELLING.getStatus());
+            queryWrapper.orderByAsc("start_time");
+        } else {
+            queryWrapper.eq("status", AuctionStatus.AUDIT.getStatus());
+            queryWrapper.orderByAsc("create_time");
+        }
+
+        // 创建分页对象
+        Page<Auction> userPage = new Page<>(pageNum, pageSize);
+
+        // 执行查询并获取分页结果
+        Page<Auction> selectPage = auctionMapper.selectPage(userPage, queryWrapper);
+        // 返回分页列表
+        return new PageList<>(selectPage);
+    }
+
+    /**
+     * 获取拍卖信息
+     *
+     * @param auctionID 拍卖ID
+     * @return 拍卖信息
+     */
+    @Transactional
+    public Auction getAuctionInfo(Long auctionID) {
+        // 根据拍卖ID查询拍卖信息
+        Auction auction = auctionMapper.selectById(auctionID);
+
+        // 用来解锁拍卖信息
+        long nowTime = System.currentTimeMillis()/1000;
+        if (auction.getStatus() == AuctionStatus.PUBLISHED.getStatus() && auction.getEndTime() > nowTime && auction.getStartTime() <= nowTime){
+            // 查询对应的货物信息
+            Cargo cargo = cargoMapper.selectById(auction.getCargoId());
+            // 设置货物状态为正在销售
+            cargo.setStatus(CargoStatus.SELLING.getStatus());
+            // 更新货物信息
+            cargoMapper.updateById(cargo);
+            // 设置拍卖已开始
+            auction.setStatus(AuctionStatus.SELLING.getStatus());
+            auctionMapper.updateById(auction);
+        }
+
+        return auction;
+    }
 }

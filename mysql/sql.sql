@@ -31,11 +31,6 @@ create table cargo
     resource text default null comment  '存储图片/视频资源Json格式',
     type       int        default 0    COMMENT '物品类型' not null,
     seller    BIGINT   not null comment '卖家',
-    starting_price decimal(18,2) DEFAULT '0.00' COMMENT '起拍价格',
-    additional_price decimal(18,2) DEFAULT '0.00' COMMENT '加价幅度',
-    hammer_price decimal(18,2) DEFAULT '0.00' COMMENT '最后价格',
-    start_time bigint   comment '开始时间/秒级',
-    end_time bigint   comment '结束时间/秒级',
     create_at bigint   not null comment '创建时间/秒级',
     update_at bigint   not null comment '更新时间/秒级',
     status   int        default 0    COMMENT '状态' not null,
@@ -43,20 +38,35 @@ create table cargo
 
 );
 
-create index idx_cargo_id on cargo (cargo_id);
 create index idx_status on cargo (status);
-create index idx_time on cargo (start_time);
 
-# 拍卖记录
+
 create table auction
 (
     auction_id BIGINT auto_increment primary key      not null,
     cargo_id   BIGINT   not null comment '货物id',
+    starting_price decimal(18,2) DEFAULT '0.00' COMMENT '起拍价格',
+    additional_price decimal(18,2) DEFAULT '0.00' COMMENT '加价幅度',
+    hammer_price decimal(18,2) DEFAULT '0.00' COMMENT '最后价格',
+    start_time bigint default 0 not null  comment '开始时间/秒级',
+    end_time bigint  default 0 not null comment '结束时间/秒级',
+    status   int        default 0    COMMENT '状态' not null,
+    deleted tinyint(1) default 0  comment '是否被删除' not null
+);
+
+create index idx_cargo_id on auction (cargo_id);
+create index idx_time on auction (start_time);
+create index idx_status on auction (status);
+
+# 拍卖记录
+create table auction_log
+(
+    auction_id BIGINT primary key      not null,
     bidder     BIGINT   not null comment '出价者',
     price      decimal(18,2) DEFAULT '0.00' comment '出价金额',
     create_at  bigint   not null comment '创建时间/秒级'
 );
 
-create index idx_auction_id on auction (auction_id);
-create index idx_time on auction (create_at);
-create index idx_bidder on auction (bidder);
+
+create index idx_time on auction_log (create_at);
+create index idx_bidder on auction_log (bidder);

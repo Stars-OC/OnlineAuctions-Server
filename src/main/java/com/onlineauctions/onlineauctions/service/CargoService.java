@@ -21,6 +21,12 @@ public class CargoService {
         return cargoMapper.insert(cargo) > 0;
     }
 
+    /**
+     * 查询拍卖物品的信息
+     *
+     * @param cargoId 要查询的cargo的ID
+     * @return 查询到的cargo对象
+     */
     public Cargo cargoInfo(Long cargoId) {
         return cargoMapper.selectById(cargoId);
     }
@@ -70,8 +76,6 @@ public class CargoService {
         verifyCargo(cargo, queryWrapper);
 
         // 调用cargoMapper的update方法，更新cargo
-        cargo.setStartTime(0L);
-        cargo.setEndTime(0L);
         // 如果更新成功，返回true，否则返回false
         boolean update = cargoMapper.update(cargo, queryWrapper) > 0;
         if (update) return CargoStatus.AUDIT.getStatus();

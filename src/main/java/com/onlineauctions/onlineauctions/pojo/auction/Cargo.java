@@ -31,17 +31,6 @@ public class Cargo {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long seller;
 
-    @NotNull(message = "起拍价不能为空")
-    private BigDecimal startingPrice;
-
-    @NotNull(message = "加价幅度不能为空")
-    private BigDecimal additionalPrice;
-
-    @TableField(insertStrategy = FieldStrategy.NEVER)
-    private Long startTime;
-    @TableField(insertStrategy = FieldStrategy.NEVER)
-    private Long endTime;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
     private Long createAt;
