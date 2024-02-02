@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 public class Cargo {
 
     @TableId(type = IdType.AUTO)
-    @TableField(insertStrategy = FieldStrategy.NEVER)
     private Long cargoId;
 
     @NotEmpty(message = "拍卖物品的名称不能为空")

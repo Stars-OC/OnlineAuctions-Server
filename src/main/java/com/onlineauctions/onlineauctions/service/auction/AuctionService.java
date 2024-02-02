@@ -1,4 +1,4 @@
-package com.onlineauctions.onlineauctions.service;
+package com.onlineauctions.onlineauctions.service.auction;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -48,7 +48,6 @@ public class AuctionService {
             queryWrapper.between("status", AuctionStatus.PUBLISHED.getStatus(), AuctionStatus.SELLING.getStatus());
             queryWrapper.orderByAsc("start_time");
         } else {
-            queryWrapper.eq("status", AuctionStatus.AUDIT.getStatus());
             queryWrapper.orderByAsc("create_time");
         }
 
@@ -72,6 +71,7 @@ public class AuctionService {
         // 根据拍卖ID查询拍卖信息
         Auction auction = auctionMapper.selectById(auctionID);
 
+        if (auction == null) return null;
         // 用来解锁拍卖信息
         long nowTime = System.currentTimeMillis()/1000;
         if (auction.getStatus() == AuctionStatus.PUBLISHED.getStatus() && auction.getEndTime() > nowTime && auction.getStartTime() <= nowTime){
@@ -87,5 +87,45 @@ public class AuctionService {
         }
 
         return auction;
+    }
+
+    public boolean auditCargo(Auction auction) {
+        auction.setStatus(AuctionStatus.PUBLISHED.getStatus());
+        return auctionMapper.insert(auction) > 0;
+    }
+
+    /**
+     * 获取拍卖日志列表
+     *
+     * @param auctionId 拍卖ID
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @param filter 过滤条件
+     * @return 返回拍卖日志列表PageList对象
+     */
+    public PageList<AuctionLog> auctionLogList(Long auctionId, int pageNum, int pageSize, String filter) {
+        // 创建查询条件
+        QueryWrapper<AuctionLog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("auction_id", auctionId);
+        // 过滤条件
+        if (!StringUtils.isEmpty(filter)) queryWrapper.like("bidder", filter);
+        // 创建分页对象
+        Page<AuctionLog> page = new Page<>(pageNum, pageSize);
+        // 执行查询并获取分页结果
+        Page<AuctionLog> selectPage = auctionLogMapper.selectPage(page, queryWrapper);
+        // 返回分页结果的包装对象
+        return new PageList<>(selectPage);
+    }
+
+    /**
+     * 根据cargoId获取拍卖信息
+     *
+     * @param cargoId 货物ID
+     * @return 拍卖对象
+     */
+    public Auction getAuctionInfoByCargoId(Long cargoId) {
+        QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("cargo_id", cargoId);
+        return auctionMapper.selectOne(queryWrapper);
     }
 }

@@ -35,6 +35,8 @@ public class CargoController {
     public Result<Cargo> addCargo(@Validated @RequestBody Cargo cargo, @RequestToken("username") Long username){
         // 设置cargo的卖家为username
         cargo.setSeller(username);
+        // 使用自增id
+        cargo.setCargoId(null);
         // 调用cargoService的addCargo方法，添加cargo
         return cargoService.addCargo(cargo) ? Result.success("添加成功",cargo) : Result.failure();
     }
@@ -87,7 +89,7 @@ public class CargoController {
 
 
     @GetMapping("/audit/list")
-    @Permission(Role.CARGO_ADMIN)
+    @Permission(Role.AUDIT_ADMIN)
     public Result<PageList<Cargo>> cargoAuditList(@RequestPage PageInfo pageInfo){
         // 调用cargoService的cargoList方法，获取cargo列表
         PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),false);
@@ -96,13 +98,13 @@ public class CargoController {
     }
 
     @GetMapping("/audit/{cargo}")
-    @Permission(Role.CARGO_ADMIN)
+    @Permission(Role.AUDIT_ADMIN)
     public Result<String> auditCargo(@PathVariable Long cargo,boolean audit){
         return cargoService.auditCargo(cargo,audit) ? Result.success("审核成功") : Result.failure("未知错误");
     }
 
     @PostMapping("/audit/update")
-    @Permission(Role.CARGO_ADMIN)
+    @Permission(Role.AUDIT_ADMIN)
     public Result<Cargo> updateCargoStatus(@Validated @RequestBody Cargo cargo){
         return cargoService.updateCargoByAdmin(cargo) ? Result.success("修改成功") : Result.failure("未知错误");
     }

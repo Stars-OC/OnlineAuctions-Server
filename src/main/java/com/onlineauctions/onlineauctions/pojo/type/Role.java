@@ -12,7 +12,7 @@ public enum Role {
     /**
      * 拍卖物品管理员
      */
-    CARGO_ADMIN(3),
+    AUDIT_ADMIN(3),
 
     /**
      * 管理员
