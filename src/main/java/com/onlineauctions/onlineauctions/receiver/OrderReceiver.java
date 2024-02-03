@@ -3,10 +3,9 @@ package com.onlineauctions.onlineauctions.receiver;
 import com.onlineauctions.onlineauctions.config.RabbitMQConfig;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
-import com.onlineauctions.onlineauctions.service.OrderService;
+import com.onlineauctions.onlineauctions.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +18,7 @@ public class OrderReceiver {
 
     @RabbitListener(queues = RabbitMQConfig.ORDER_DELAY_QUEUE, concurrency = "1")
     public void verifyOrderStatus(String orderId) {
+        System.out.println("接收到了");
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
         if (orderInfo == null) return;
         // 取消订单

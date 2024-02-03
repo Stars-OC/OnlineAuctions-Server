@@ -16,6 +16,10 @@ public class RabbitMQConfig {
 
     public final static String ORDER_DELAY_QUEUE = "orderDelayQueue";
 
+    public final static String ORDER_EXCHANGE = "orderExchange";
+
+    public final static String ORDER_ROUTING_KEY = "order";
+
     // 消息转换器 jwt-json带databind
     @Bean
     public MessageConverter jsonMessageConverter() {
@@ -42,6 +46,6 @@ public class RabbitMQConfig {
 
     @Bean
     Binding orderBinding(){
-        return BindingBuilder.bind(orderQueue()).to(orderDirectExchange()).with("order");
+        return BindingBuilder.bind(orderQueue()).to(orderDirectExchange()).with(ORDER_ROUTING_KEY);
     }
 }
