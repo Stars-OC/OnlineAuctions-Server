@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@TableName("order")
+@TableName("`order`")
 @Builder
 public class Order {
     @TableId

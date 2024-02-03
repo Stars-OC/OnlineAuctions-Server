@@ -27,7 +27,7 @@ create table wallet
     username BIGINT  primary key      not null,
     money decimal(18,2) DEFAULT '0.00' COMMENT '账户余额',
     fund decimal(18,2) DEFAULT '0.00' COMMENT '拍卖额度',
-    password char(64) default null,
+    password char(64) not null,
     update_at bigint   not null comment '更新时间/秒级'
 
 );
@@ -50,7 +50,7 @@ create table order_info
     title char(64)       comment '订单标题'          not null,
     description text default null comment '订单描述',
     type       int        default 0    COMMENT '订单类型' not null,
-    balance   decimal(18,2) DEFAULT '0.00' COMMENT '订单金额',
+    balance   decimal(18,2) not null COMMENT '订单金额',
     create_at bigint   not null comment '成交时间/秒级',
     cargo_id BIGINT   not null comment '物品id',
     status   int        default 0    COMMENT '状态' not null,

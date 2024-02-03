@@ -122,4 +122,8 @@ public class CargoService {
                 .lt("status", CargoStatus.SOLD.getStatus()); // 根据status不是SOLD以上的状态进行查询
         return cargoMapper.update(cargo,queryWrapper) > 0;
     }
+
+    public void updateCargoStatus(Long cargoId, int status) {
+        cargoMapper.updateCargoStatus(cargoId,status);
+    }
 }

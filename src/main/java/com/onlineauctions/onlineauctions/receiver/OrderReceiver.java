@@ -16,6 +16,11 @@ public class OrderReceiver {
 
     private final OrderService orderService;
 
+    /**
+     * 验证订单状态
+     *
+     * @param orderId 订单ID
+     */
     @RabbitListener(queues = RabbitMQConfig.ORDER_DELAY_QUEUE, concurrency = "1")
     public void verifyOrderStatus(String orderId) {
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
@@ -25,17 +30,24 @@ public class OrderReceiver {
             orderService.cancelOrder(orderId);
             log.info("订单号：{}，状态：{}，取消订单", orderInfo.getOrderId(), orderInfo.getStatus());
         }
-
     }
 
+    /**
+     * 更新订单状态
+     *
+     * @param orderId 订单ID
+     */
     @RabbitListener(queues = RabbitMQConfig.ORDER_QUEUE, concurrency = "1")
     public void updateOrderStatus(String orderId) {
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
         if (orderInfo == null) return;
         // 支付成功
         if (orderInfo.getStatus() == OrderStatus.PAYING.getStatus()){
-//            orderService.updateOrderInfo(orderInfo);
+            // 更新订单状态为已支付
+            orderInfo.setStatus(OrderStatus.PAID.getStatus());
+            // orderService.updateOrderInfo(orderInfo);
             log.info("订单号：{}，状态：{}，支付成功", orderInfo.getOrderId(), orderInfo.getStatus());
         }
     }
+
 }

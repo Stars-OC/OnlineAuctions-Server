@@ -23,6 +23,11 @@ public class BalanceController {
 
     private final BalanceService balanceService;
 
+    @PostMapping("/wallet/create")
+    public Result<Wallet> createWallet(@RequestToken("username") long username,String password) {
+        return balanceService.createWallet(username,password)?Result.success("创建钱包成功"):Result.failure("创建钱包失败");
+    }
+
     /**
      * 获取钱包信息
      *

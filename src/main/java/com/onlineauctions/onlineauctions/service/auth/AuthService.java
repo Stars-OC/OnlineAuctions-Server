@@ -1,14 +1,17 @@
 package com.onlineauctions.onlineauctions.service.auth;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
+import com.onlineauctions.onlineauctions.service.order.BalanceService;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -19,10 +22,6 @@ public class AuthService {
 
     @Autowired
     private JwtService jwtService;
-
-
-
-
 
     /**
      * 判断给定条件在指定数据表中是否存在
@@ -96,14 +95,16 @@ public class AuthService {
      * @param user 要注册的用户对象
      * @return 注册是否成功
      */
+    @Transactional
     public String register(User user){
 
         Long username = user.getUsername();
         if (findUsername(username) == null){
 
-            userMapper.insert(user);
             // 设置默认角色为普通用户
             user.setRole(Role.USER.getRole());
+            userMapper.insert(user);
+
             log.info("用户 {} 注册成功", username);
 
             String jwt = jwtService.createJwt(user);

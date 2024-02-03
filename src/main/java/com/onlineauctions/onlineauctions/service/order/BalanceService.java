@@ -3,6 +3,7 @@ package com.onlineauctions.onlineauctions.service.order;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.mapper.WalletMapper;
+import com.onlineauctions.onlineauctions.pojo.request.WalletInfo;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class BalanceService {
         Wallet wallet = walletMapper.selectById(username);
         if (wallet == null) return null;
         wallet.setMoney(wallet.getMoney().add(money));
+        wallet.setFund(wallet.getFund().add(money.multiply(new BigDecimal("1.5"))));
         walletMapper.updateById(wallet);
         return wallet;
     }
@@ -63,24 +65,29 @@ public class BalanceService {
      * @return 支付成功返回钱包对象，否则返回null
      */
     @Transactional
-    public Wallet payByUser(long username, BigDecimal balance, String password) {
+    public WalletInfo payByUser(long username, BigDecimal balance, String password) {
         // 构建查询条件
         QueryWrapper<Wallet> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", username).eq("password", AesUtil.encrypt(password));
         // 查询钱包信息
         Wallet wallet = walletMapper.selectOne(queryWrapper);
+        if (wallet == null) return null;
         BigDecimal money = wallet.getMoney();
+        WalletInfo walletInfo = new WalletInfo();
+        walletInfo.setWallet(wallet);
         // 判断余额是否足够支付
         if (money.compareTo(balance) >= 0) {
             // 更新钱包余额
             wallet.setMoney(money.subtract(balance));
             // 更新钱包信息
             walletMapper.updateById(wallet);
-            return wallet;
+            walletInfo.setSuccess(true);
+            walletInfo.setMessage("支付成功");
         } else {
-            // 余额不足
-            return null;
+            walletInfo.setMessage("余额不足");
         }
+        // 余额不足
+        return walletInfo;
     }
 
 
@@ -105,5 +112,22 @@ public class BalanceService {
         walletMapper.updateById(wallet);
         return wallet;
     }
+
+    /**
+     * 创建钱包
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return 如果创建成功返回true，否则返回false
+     */
+    @Transactional
+    public boolean createWallet(long username, String password){
+        Wallet wallet = walletMapper.selectById(username);
+        if (wallet == null){
+            return walletMapper.createWallet(username,AesUtil.encrypt(password),System.currentTimeMillis()/1000) > 0;
+        }
+        return false;
+    }
+
 
 }

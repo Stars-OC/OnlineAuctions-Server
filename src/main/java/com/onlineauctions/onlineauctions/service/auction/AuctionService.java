@@ -128,4 +128,8 @@ public class AuctionService {
         queryWrapper.eq("cargo_id", cargoId);
         return auctionMapper.selectOne(queryWrapper);
     }
+
+    public Auction getAuctionInfoByAuctionId(Long auctionId) {
+        return auctionMapper.selectById(auctionId);
+    }
 }

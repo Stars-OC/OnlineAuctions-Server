@@ -8,13 +8,18 @@ import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
 import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.mapper.WalletMapper;
 import com.onlineauctions.onlineauctions.pojo.PageList;
+import com.onlineauctions.onlineauctions.pojo.auction.Auction;
 import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.request.PaidInfo;
+import com.onlineauctions.onlineauctions.pojo.request.WalletInfo;
+import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
+import com.onlineauctions.onlineauctions.service.CargoService;
+import com.onlineauctions.onlineauctions.service.auction.AuctionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,13 +38,17 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
 
-    private final CargoMapper cargoMapper;
+
 
     private final WalletMapper walletMapper;
 
     private final BalanceService balanceService;
 
     private final RabbitMQService rabbitMQService;
+
+    private final AuctionService auctionService;
+
+    private final CargoService cargoService;
 
     /**
      * 查询订单信息
@@ -49,9 +58,11 @@ public class OrderService {
      * @return 订单信息对象
      */
     public OrderInfo orderInfo(long username, long orderId) {
-        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", username).eq("orderId", orderId);
-        return orderInfoMapper.selectOne(queryWrapper);
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username).eq("order_id", orderId);
+        Order order = orderMapper.selectOne(queryWrapper);
+        if (order == null) return null;
+        return orderInfoMapper.selectById(orderId);
     }
 
     /**
@@ -60,12 +71,10 @@ public class OrderService {
      * @param username 用户名
      * @param pageNum 当前页码
      * @param pageSize 每页数量
-     * @param filter 过滤条件
      * @return 分页列表对象
      */
-    public PageList<Order> orderList(long username, int pageNum, int pageSize, String filter) {
+    public PageList<Order> orderList(long username, int pageNum, int pageSize) {
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        if (!StringUtils.isEmpty(filter)) queryWrapper.like("title", filter);
         queryWrapper.eq("username", username).orderByDesc("create_at");
         Page<Order> page = new Page<>(pageNum, pageSize);
         return new PageList<>(orderMapper.selectPage(page,queryWrapper));
@@ -118,12 +127,15 @@ public class OrderService {
         queryWrapper.eq("username", username).eq("order_id", orderId);
 
         // 根据查询条件查询订单
-        Order order = orderMapper.selectById(queryWrapper);
+        Order order = orderMapper.selectOne(queryWrapper);
 
         // 如果订单存在
         if (order != null) {
             // 根据订单ID查询订单信息
             OrderInfo orderInfo = orderInfoMapper.selectById(orderId);
+
+            // 防止取消正常订单
+            if (orderInfo.getStatus() != OrderStatus.PAYING.getStatus()) return null;
 
             // 将订单状态设置为已取消
             orderInfo.setStatus(OrderStatus.CANCELED.getStatus());
@@ -132,7 +144,7 @@ public class OrderService {
             orderInfoMapper.updateById(orderInfo);
 
             // 更新货物状态为未售出
-            cargoMapper.updateCargoStatus(orderInfo.getCargoId(), CargoStatus.UNSOLD.getStatus());
+            cargoService.updateCargoStatus(orderInfo.getCargoId(), CargoStatus.UNSOLD.getStatus());
 
             // 取消订单并支付
             return balanceService.cancelOrderPaid(order.getUsername(), orderInfo.getBalance());
@@ -141,24 +153,41 @@ public class OrderService {
         return null;
     }
 
-//    public OrderInfo createOrderInfo(long username, long cargoId) {
-//        QueryWrapper<Cargo> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("cargo_id", cargoId);
-//        Cargo cargo = cargoMapper.selectOne(queryWrapper);
-//        if (cargo != null) {
-//            OrderInfo orderInfo = OrderInfo.builder()
-//                    .title(cargo.getName())
-//                    .description(cargo.getDescription())
-//                    .balance(cargo)
-//                    .status(OrderStatus.PENDING.getStatus())
-//                    .createAt(System.currentTimeMillis())
-//                    .cargoId(cargo.getCargoId())
-//                    .username(username)
-//                    .build();
-//            orderInfoMapper.insert(orderInfo);
-//            return orderInfo;
-//        }
-//    }
+    /**
+     * 通过拍卖创建订单信息
+     *
+     * @param username 用户名
+     * @param auctionId 拍卖ID
+     * @return 订单信息
+     */
+    @Transactional
+    public OrderInfo createOrderInfoByAuction(long username, long auctionId) {
+        // 获取拍卖信息
+        Auction auction = auctionService.getAuctionInfoByAuctionId(auctionId);
+        Long cargoId = auction.getCargoId();
+        // 获取货物信息
+        Cargo cargo = cargoService.cargoInfo(cargoId);
+        // 如果拍卖状态不是已售出，则返回null
+        if (auction.getStatus() != AuctionStatus.SOLD.getStatus()) return null;
+        // 构建订单信息
+        OrderInfo orderInfo = OrderInfo.builder()
+                .cargoId(cargoId)
+                .title(cargo.getName())
+                .description(cargo.getDescription())
+                .balance(auction.getHammerPrice())
+                .build();
+        // 插入订单信息到数据库
+        orderInfoMapper.insert(orderInfo);
+        // 构建订单对象
+        Order order = Order.builder().orderId(orderInfo.getOrderId())
+                .username(username)
+                .build();
+        // 插入订单到数据库
+        orderMapper.insert(order);
+        // 将订单信息延迟发送到消息队列
+        rabbitMQService.delayOrder(orderInfo.getOrderId());
+        return orderInfo;
+    }
 
     /**
      * 事务性方法，用于支付订单
@@ -169,10 +198,17 @@ public class OrderService {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PaidInfo payOrder(long username, long orderId , String password) {
+
         // 根据订单ID查询订单信息
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("order_id", orderId);
         OrderInfo orderInfo = orderInfoMapper.selectOne(queryWrapper);
+
+        //判断是否支付过
+        QueryWrapper<Order> queryOrderWrapper = new QueryWrapper<>();
+        queryOrderWrapper.eq("username", username).eq("order_id", orderId);
+        Order order = orderMapper.selectOne(queryOrderWrapper);
+        if (order != null) return PaidInfo.builder().success(false).message("已支付，不要再支付了").build();
 
         // 如果订单存在
         if (orderInfo != null) {
@@ -180,21 +216,24 @@ public class OrderService {
             BigDecimal balance = orderInfo.getBalance();
 
             // 根据用户ID支付余额
-            Wallet wallet = balanceService.payByUser(username, balance , password);
+            WalletInfo walletInfo = balanceService.payByUser(username, balance , password);
 
             // 如果支付成功
-            if (wallet != null) {
-                // 更新订单状态为已支付
-                orderInfo.setStatus(OrderStatus.PAID.getStatus());
-                orderInfoMapper.updateById(orderInfo);
+            if (walletInfo != null) {
+                if (walletInfo.isSuccess()){
 
-                // 发送已支付订单消息到RabbitMQ
-                rabbitMQService.paidOrder(orderInfo.getOrderId());
+                    orderInfoMapper.updateById(orderInfo);
 
-                // 创建订单日志
-                createOrderLog(username, orderId);
+                    // 发送已支付订单消息到RabbitMQ
+                    rabbitMQService.paidOrder(orderInfo.getOrderId());
 
-                return PaidInfo.builder().success(true).message("支付成功").orderInfo(orderInfo).build();
+                    // 创建订单日志
+                    createOrderLog(username, orderId);
+
+                    return PaidInfo.builder().success(true).message(walletInfo.getMessage()).orderInfo(orderInfo).build();
+                }else {
+                    return PaidInfo.builder().success(false).message(walletInfo.getMessage()).build();
+                }
             }
             return PaidInfo.builder().success(false).message("支付失败，密码错误").build();
         }
