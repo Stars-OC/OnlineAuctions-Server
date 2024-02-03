@@ -142,6 +142,20 @@ public class Result<T> implements Serializable {
         }
     }
 
+    /**
+     * 根据条件决定返回成功或失败的结果
+     *
+     * @param b 布尔值，如果为true则返回成功的结果，否则返回失败的结果
+     * @param data 数据，作为成功结果的返回值
+     * @param message 消息，作为失败结果的返回值
+     * @param <T> 泛型类型
+     * @return 成功或失败的结果
+     */
+    public static <T> Result<T> decide(boolean b, T data, String message) {
+        return b ? success(message, data) : failure(message);
+    }
+
+
 
     /**
      * 生成一个带有结果码的Result对象

@@ -1,17 +1,10 @@
 package com.onlineauctions.onlineauctions.service.order;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
-import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.mapper.WalletMapper;
-import com.onlineauctions.onlineauctions.pojo.PageList;
-import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
-import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
-import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
+import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -61,10 +54,23 @@ public class BalanceService {
     }
 
 
+    /**
+     * 用户支付
+     *
+     * @param username 用户名
+     * @param balance 需要支付的金额
+     * @param password 密码
+     * @return 支付成功返回钱包对象，否则返回null
+     */
     @Transactional
-    public Wallet payByUser(long username,BigDecimal balance) {
-        Wallet wallet = walletMapper.selectById(username);
+    public Wallet payByUser(long username, BigDecimal balance, String password) {
+        // 构建查询条件
+        QueryWrapper<Wallet> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username).eq("password", AesUtil.encrypt(password));
+        // 查询钱包信息
+        Wallet wallet = walletMapper.selectOne(queryWrapper);
         BigDecimal money = wallet.getMoney();
+        // 判断余额是否足够支付
         if (money.compareTo(balance) >= 0) {
             // 更新钱包余额
             wallet.setMoney(money.subtract(balance));
@@ -76,6 +82,7 @@ public class BalanceService {
             return null;
         }
     }
+
 
     /**
      * 取消已支付订单并更新钱包余额和信誉值

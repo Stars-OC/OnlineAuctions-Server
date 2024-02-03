@@ -1,9 +1,6 @@
 package com.onlineauctions.onlineauctions.pojo.user.balance;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -13,6 +10,7 @@ import java.math.BigDecimal;
 @Data
 @TableName("wallet")
 public class Wallet {
+    @TableId
     private Long username;
 
     @TableField(updateStrategy = FieldStrategy.NEVER)

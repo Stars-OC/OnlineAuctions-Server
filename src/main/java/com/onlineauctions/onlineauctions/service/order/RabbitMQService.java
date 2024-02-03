@@ -29,7 +29,8 @@ public class RabbitMQService {
      * @param orderId 订单ID
      */
     public void delayOrder(Long orderId) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.ORDER_DELAY_QUEUE,orderId,message -> {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.ORDER_DELAY_EXCHANGE,RabbitMQConfig.ORDER_DELAY_ROUTING_KEY,orderId,message -> {
+            // 15min的延迟
             message.getMessageProperties().setDelay(15 * 60 * 1000);
             return message;
         });

@@ -18,7 +18,6 @@ public class OrderReceiver {
 
     @RabbitListener(queues = RabbitMQConfig.ORDER_DELAY_QUEUE, concurrency = "1")
     public void verifyOrderStatus(String orderId) {
-        System.out.println("接收到了");
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
         if (orderInfo == null) return;
         // 取消订单

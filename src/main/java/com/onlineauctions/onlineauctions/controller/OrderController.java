@@ -6,6 +6,8 @@ import com.onlineauctions.onlineauctions.annotation.RequestToken;
 import com.onlineauctions.onlineauctions.pojo.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.request.PaidInfo;
+import com.onlineauctions.onlineauctions.pojo.request.PayInfo;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
@@ -14,10 +16,7 @@ import com.onlineauctions.onlineauctions.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -37,7 +36,7 @@ public class OrderController {
      * @return 订单信息Result对象
      */
     @GetMapping("/info/{orderId}")
-    public Result<OrderInfo> orderInfo(@RequestToken long username, @PathVariable long orderId) {
+    public Result<OrderInfo> orderInfo(@RequestToken("username") long username, @PathVariable long orderId) {
         OrderInfo orderInfo = orderService.orderInfo(username, orderId);
         return orderInfo != null ? Result.success("查询成功", orderInfo): Result.failure("查询失败，订单不存在/不属于你");
     }
@@ -50,7 +49,7 @@ public class OrderController {
      * @return 结果对象，包含查询结果和分页列表
      */
     @GetMapping("/user/list")
-    public Result<PageList<Order>> orderList(@RequestToken long username, @RequestPage PageInfo pageInfo) {
+    public Result<PageList<Order>> orderList(@RequestToken("username") long username, @RequestPage PageInfo pageInfo) {
         PageList<Order> pageList = orderService.orderList(username,pageInfo.getPageNum(),pageInfo.getPageNum(),pageInfo.getFilter());
         return pageList != null ? Result.success("查询成功", pageList): Result.failure("查询失败");
     }
@@ -63,7 +62,7 @@ public class OrderController {
      * @return 取消结果
      */
     @GetMapping("/user/cancel/{orderId}")
-    public Result<Wallet> cancelOrder(@RequestToken long username, @PathVariable String orderId) {
+    public Result<Wallet> cancelOrder(@RequestToken("username") long username, @PathVariable String orderId) {
         // 调用订单服务取消订单
         Wallet wallet = orderService.cancelOrderByUser(username, orderId);
         // 判断取消是否成功
@@ -74,14 +73,14 @@ public class OrderController {
      * 为用户支付订单
      *
      * @param username 用户名
-     * @param orderId 订单ID
+     * @param payInfo 支付信息
      * @return 支付结果
      */
-    @GetMapping("/user/pay/{orderId}")
-    public Result<OrderInfo> payOrder(@RequestToken long username, @PathVariable long orderId) {
+    @PostMapping ("/user/pay")
+    public Result<OrderInfo> payOrder(@RequestToken("username") long username, @Validated @RequestBody PayInfo payInfo) {
         // 调用订单服务创建订单
-        OrderInfo orderInfo = orderService.payOrder(username,orderId);
+        PaidInfo paidInfo = orderService.payOrder(username,payInfo.getOrderId(), payInfo.getPassword());
         // 判断创建是否成功
-        return orderInfo != null?Result.success("支付成功",orderInfo): Result.failure("支付失败 - 余额不足");
+        return Result.decide(paidInfo.getSuccess(),paidInfo.getOrderInfo(), paidInfo.getMessage());
     }
 }

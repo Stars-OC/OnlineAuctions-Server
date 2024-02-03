@@ -9,6 +9,7 @@ import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.mapper.WalletMapper;
 import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
+import com.onlineauctions.onlineauctions.pojo.request.PaidInfo;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
@@ -167,7 +168,7 @@ public class OrderService {
      * @return 订单信息
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OrderInfo payOrder(long username, long orderId) {
+    public PaidInfo payOrder(long username, long orderId , String password) {
         // 根据订单ID查询订单信息
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("order_id", orderId);
@@ -179,7 +180,7 @@ public class OrderService {
             BigDecimal balance = orderInfo.getBalance();
 
             // 根据用户ID支付余额
-            Wallet wallet = balanceService.payByUser(username, balance);
+            Wallet wallet = balanceService.payByUser(username, balance , password);
 
             // 如果支付成功
             if (wallet != null) {
@@ -193,11 +194,12 @@ public class OrderService {
                 // 创建订单日志
                 createOrderLog(username, orderId);
 
-                return orderInfo;
+                return PaidInfo.builder().success(true).message("支付成功").orderInfo(orderInfo).build();
             }
+            return PaidInfo.builder().success(false).message("支付失败，密码错误").build();
         }
 
-        return null;
+        return PaidInfo.builder().success(false).message("支付失败，订单不存在").build();
     }
 
     /**

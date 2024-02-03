@@ -30,7 +30,7 @@ public class BalanceController {
      * @return 钱包信息Result对象
      */
     @GetMapping("/wallet/info")
-    public Result<Wallet> walletInfo(@RequestToken long username) {
+    public Result<Wallet> walletInfo(@RequestToken("username") long username) {
         Wallet wallet = balanceService.walletInfo(username);
         return wallet!=null ? Result.success("查询成功",wallet):Result.failure("查询失败");
     }
