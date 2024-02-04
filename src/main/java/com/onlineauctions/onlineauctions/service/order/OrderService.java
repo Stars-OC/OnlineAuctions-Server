@@ -87,12 +87,9 @@ public class OrderService {
      * @param orderId 订单ID
      */
     public void cancelOrder(String orderId) {
-        // 创建查询条件
-        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("order_id", orderId);
         // 根据订单ID查询订单
-        Order order = orderMapper.selectById(queryWrapper);
-        // 如果订单存在
+        Order order = orderMapper.selectById(orderId);
+        // 如果订单不存在
         if (order != null){
             // 调用cancelOrderByUser方法取消订单
             Wallet wallet = cancelOrderByUser(order.getUsername(), orderId);

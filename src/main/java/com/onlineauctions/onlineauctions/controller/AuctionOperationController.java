@@ -26,6 +26,6 @@ public class AuctionOperationController {
     @GetMapping("/info/{auctionId}")
     public Result<AuctionStateInfo> getNowAuctionInfo(@PathVariable long auctionId){
         AuctionStateInfo nowAuctionInfo = auctionOperationService.getNowAuctionInfo(auctionId);
-        return nowAuctionInfo != null? Result.success("获取成功",nowAuctionInfo):Result.failure("获取失败");
+        return nowAuctionInfo != null? Result.success("获取成功",nowAuctionInfo):Result.failure("获取失败，拍卖未开始/已结束");
     }
 }

@@ -1,6 +1,7 @@
 package com.onlineauctions.onlineauctions;
 
 import com.onlineauctions.onlineauctions.pojo.PaidInfo;
+import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.service.auction.AuctionOperationService;
 import com.onlineauctions.onlineauctions.service.order.OrderService;
 import com.onlineauctions.onlineauctions.service.order.RabbitMQService;
@@ -20,7 +21,8 @@ class OnlineAuctionsApplicationTests {
 
     @Test
     void contextLoads() {
-        auctionOperationService.getNowAuctionInfo(1);
+        OrderInfo infoByAuction = orderService.createOrderInfoByAuction(1, 1);
+        System.out.println(infoByAuction);
 //        Thread thread = new Thread(() -> {
 //            for (int i = 0; i < 5; i++){
 //                PaidInfo paidInfo = orderService.payOrder(1, 6, "123456");
