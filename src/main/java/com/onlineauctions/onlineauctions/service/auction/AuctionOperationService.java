@@ -6,6 +6,8 @@ import com.onlineauctions.onlineauctions.mapper.AuctionLogMapper;
 import com.onlineauctions.onlineauctions.mapper.AuctionMapper;
 import com.onlineauctions.onlineauctions.mapper.CargoMapper;
 import com.onlineauctions.onlineauctions.pojo.auction.Auction;
+import com.onlineauctions.onlineauctions.pojo.request.AuctionOperation;
+import com.onlineauctions.onlineauctions.pojo.respond.AuctionOperationResult;
 import com.onlineauctions.onlineauctions.pojo.respond.AuctionStateInfo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
@@ -52,6 +54,10 @@ public class AuctionOperationService {
             return new AuctionStateInfo(new BigDecimal(value), keyTime, endTime);
         }
 
+        return null;
+    }
+
+    public AuctionOperationResult auctionAdditionalPrice(long username, AuctionOperation auctionOperation) {
         return null;
     }
 }
