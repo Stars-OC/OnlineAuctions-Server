@@ -12,19 +12,17 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class JwtService extends RedisHashService{
+public class JwtService extends RedisService {
 
     @Value("${user.verifyTime}")
     private int verifyTime;
 
-    @Autowired
-    private StringRedisTemplate redis;
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    public JwtService(RedisTemplate<String, String> redisTemplate) {
+    public JwtService(StringRedisTemplate redisTemplate) {
         super(redisTemplate, "token");
     }
 
@@ -40,7 +38,7 @@ public class JwtService extends RedisHashService{
         String jwt = JwtUtil.createJwt(user, verifyTime);
 
         // 将JWT和用户名以及过期时间存入Redis
-        setHashValue(user.getUsername().toString() , jwt, verifyTime, TimeUnit.HOURS);
+        setValue(user.getUsername().toString() , jwt, verifyTime, TimeUnit.HOURS);
 
         return jwt;
     }
@@ -77,7 +75,7 @@ public class JwtService extends RedisHashService{
         if (user == null) return null;
 
         // 删除redis中的用户名
-        deleteHashField(String.valueOf(username));
+        deleteKey(String.valueOf(username));
         // 创建新的Jwt令牌
         String newToken = createJwt(user);
 
@@ -92,7 +90,7 @@ public class JwtService extends RedisHashService{
      * @param username 要删除的用户
      */
     public void deleteJwtByUsername(String username){
-        deleteHashField(username);
+        deleteKey(username);
     }
 
     /**
@@ -102,6 +100,6 @@ public class JwtService extends RedisHashService{
      * @return JWT字符串
      */
     public String getJwtByUsername(String username) {
-        return getHashValue(username);
+        return getValue(username);
     }
 }

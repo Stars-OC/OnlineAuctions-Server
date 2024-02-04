@@ -11,6 +11,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RedisConfig {
     private final StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * 配置Redis模板以支持事务。
+     */
     @Bean
     public void getRedisTemplate(){
         stringRedisTemplate.setEnableTransactionSupport(true);
