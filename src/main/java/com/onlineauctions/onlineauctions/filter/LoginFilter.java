@@ -1,9 +1,9 @@
 package com.onlineauctions.onlineauctions.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.ResultCode;
-import com.onlineauctions.onlineauctions.service.auth.JwtService;
+import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import com.onlineauctions.onlineauctions.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
 

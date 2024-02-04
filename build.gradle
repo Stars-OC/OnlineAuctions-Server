@@ -27,12 +27,13 @@ repositories {
 }
 
 dependencies {
+
     // springboot
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // 数据库
     implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.3.2'
-    implementation 'mysql:mysql-connector-java:8.0.33'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
 
     // 文件存储相关
     implementation 'io.github.thciwei:x-file-storage-spring:2.4.1-RELEASE'

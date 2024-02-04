@@ -3,12 +3,9 @@ package com.onlineauctions.onlineauctions.pojo.auction;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.onlineauctions.onlineauctions.pojo.Resource;
+import com.onlineauctions.onlineauctions.pojo.respond.Resource;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 @TableName("cargo")

@@ -1,7 +1,7 @@
 package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.RequestToken;
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.UserService;
 import lombok.extern.slf4j.Slf4j;

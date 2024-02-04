@@ -1,6 +1,8 @@
 package com.onlineauctions.onlineauctions.receiver;
 
 import com.onlineauctions.onlineauctions.config.RabbitMQConfig;
+import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
+import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.service.order.OrderService;
@@ -42,10 +44,8 @@ public class OrderReceiver {
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
         if (orderInfo == null) return;
         // 支付成功
-        if (orderInfo.getStatus() == OrderStatus.PAYING.getStatus()){
+        if (orderInfo.getStatus() == OrderStatus.PAID.getStatus()){
             // 更新订单状态为已支付
-            orderInfo.setStatus(OrderStatus.PAID.getStatus());
-            // orderService.updateOrderInfo(orderInfo);
             log.info("订单号：{}，状态：{}，支付成功", orderInfo.getOrderId(), orderInfo.getStatus());
         }
     }

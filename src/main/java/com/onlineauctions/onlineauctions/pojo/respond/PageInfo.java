@@ -1,4 +1,4 @@
-package com.onlineauctions.onlineauctions.pojo;
+package com.onlineauctions.onlineauctions.pojo.respond;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

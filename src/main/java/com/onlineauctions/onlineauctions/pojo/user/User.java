@@ -23,13 +23,11 @@ import java.math.BigDecimal;
 public class User {
 
     @TableId(type = IdType.AUTO)
-    @NotNull(message = "用户名不能为空")
     private Long username;
 
     @NotEmpty(message = "昵称不能为空")
     private String nickname;
 
-    @NotEmpty(message = "密码不能为空")
     @TableField(fill = FieldFill.INSERT)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

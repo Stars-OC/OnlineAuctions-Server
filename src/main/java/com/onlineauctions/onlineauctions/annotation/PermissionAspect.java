@@ -1,6 +1,6 @@
 package com.onlineauctions.onlineauctions.annotation;
 
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.ResultCode;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.utils.JwtUtil;

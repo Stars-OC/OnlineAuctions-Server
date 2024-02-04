@@ -3,7 +3,7 @@ package com.onlineauctions.onlineauctions.service.order;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.mapper.WalletMapper;
-import com.onlineauctions.onlineauctions.pojo.request.WalletInfo;
+import com.onlineauctions.onlineauctions.pojo.WalletInfo;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.RequiredArgsConstructor;

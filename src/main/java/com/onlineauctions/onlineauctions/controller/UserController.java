@@ -1,11 +1,12 @@
 package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.annotation.RequestToken;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.UserService;
-import com.onlineauctions.onlineauctions.service.auth.JwtService;
+import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +45,8 @@ public class UserController {
      * @return 结果对象
      */
     @PostMapping("/update/info")
-    public Result<String> updateInfo(@RequestBody @Validated User user){
-
+    public Result<String> updateInfo(@RequestToken("username")long username, @RequestBody @Validated User user){
+        user.setUsername(username);
         String jwt = userService.updateInfo(user);
         return jwt != null?
                 Result.success("上传用户信息成功",jwt) :

@@ -1,7 +1,7 @@
 package com.onlineauctions.onlineauctions.annotation;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.onlineauctions.onlineauctions.pojo.PageInfo;
+import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;

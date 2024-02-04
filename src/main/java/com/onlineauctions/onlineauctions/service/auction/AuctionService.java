@@ -132,4 +132,8 @@ public class AuctionService {
     public Auction getAuctionInfoByAuctionId(Long auctionId) {
         return auctionMapper.selectById(auctionId);
     }
+
+    public Auction getAuctionInfoByAuctionIdWithLock(long auctionId) {
+        return getAuctionInfoByAuctionId(auctionId);
+    }
 }

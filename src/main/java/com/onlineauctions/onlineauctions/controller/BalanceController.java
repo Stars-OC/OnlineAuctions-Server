@@ -2,7 +2,7 @@ package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.annotation.RequestToken;
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
 import com.onlineauctions.onlineauctions.service.order.BalanceService;

@@ -1,12 +1,11 @@
 package com.onlineauctions.onlineauctions.service.auth;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
-import com.onlineauctions.onlineauctions.service.order.BalanceService;
+import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

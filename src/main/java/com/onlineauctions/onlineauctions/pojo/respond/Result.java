@@ -1,4 +1,4 @@
-package com.onlineauctions.onlineauctions.pojo;
+package com.onlineauctions.onlineauctions.pojo.respond;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.onlineauctions.onlineauctions.pojo.type.ResultCode;

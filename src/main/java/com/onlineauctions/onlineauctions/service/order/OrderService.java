@@ -1,17 +1,14 @@
 package com.onlineauctions.onlineauctions.service.order;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.onlineauctions.onlineauctions.mapper.CargoMapper;
 import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
 import com.onlineauctions.onlineauctions.mapper.OrderMapper;
-import com.onlineauctions.onlineauctions.mapper.WalletMapper;
 import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.auction.Auction;
 import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
-import com.onlineauctions.onlineauctions.pojo.request.PaidInfo;
-import com.onlineauctions.onlineauctions.pojo.request.WalletInfo;
+import com.onlineauctions.onlineauctions.pojo.PaidInfo;
+import com.onlineauctions.onlineauctions.pojo.WalletInfo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
@@ -23,7 +20,6 @@ import com.onlineauctions.onlineauctions.service.auction.AuctionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +33,6 @@ public class OrderService {
     private final OrderInfoMapper orderInfoMapper;
 
     private final OrderMapper orderMapper;
-
-
-
-    private final WalletMapper walletMapper;
 
     private final BalanceService balanceService;
 
@@ -160,10 +152,10 @@ public class OrderService {
      * @param auctionId 拍卖ID
      * @return 订单信息
      */
-    @Transactional
+    @Transactional()
     public OrderInfo createOrderInfoByAuction(long username, long auctionId) {
         // 获取拍卖信息
-        Auction auction = auctionService.getAuctionInfoByAuctionId(auctionId);
+        Auction auction = auctionService.getAuctionInfoByAuctionIdWithLock(auctionId);
         Long cargoId = auction.getCargoId();
         // 获取货物信息
         Cargo cargo = cargoService.cargoInfo(cargoId);
@@ -206,7 +198,7 @@ public class OrderService {
 
         //判断是否支付过
         QueryWrapper<Order> queryOrderWrapper = new QueryWrapper<>();
-        queryOrderWrapper.eq("username", username).eq("order_id", orderId);
+        queryOrderWrapper.eq("order_id", orderId);
         Order order = orderMapper.selectOne(queryOrderWrapper);
         if (order != null) return PaidInfo.builder().success(false).message("已支付，不要再支付了").build();
 
@@ -222,12 +214,14 @@ public class OrderService {
             if (walletInfo != null) {
                 if (walletInfo.isSuccess()){
 
+                    orderInfo.setStatus(OrderStatus.PAID.getStatus());
+
                     orderInfoMapper.updateById(orderInfo);
 
                     // 发送已支付订单消息到RabbitMQ
                     rabbitMQService.paidOrder(orderInfo.getOrderId());
 
-                    // 创建订单日志
+                    // 创建订单日志 这个如果有别的id重复提交会报错
                     createOrderLog(username, orderId);
 
                     return PaidInfo.builder().success(true).message(walletInfo.getMessage()).orderInfo(orderInfo).build();

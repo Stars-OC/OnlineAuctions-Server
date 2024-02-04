@@ -1,29 +1,32 @@
-package com.onlineauctions.onlineauctions.service.auth;
+package com.onlineauctions.onlineauctions.service.redis;
 
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class JwtService {
+public class JwtService extends RedisHashService{
 
     @Value("${user.verifyTime}")
     private int verifyTime;
-
-    // 后面进行区分
-    private final String prefix = "token:";
 
     @Autowired
     private StringRedisTemplate redis;
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    public JwtService(RedisTemplate<String, String> redisTemplate) {
+        super(redisTemplate, "token");
+    }
 
     /**
      * 创建JWT并将其与用户名和过期时间一起存入Redis数据库中
@@ -37,7 +40,7 @@ public class JwtService {
         String jwt = JwtUtil.createJwt(user, verifyTime);
 
         // 将JWT和用户名以及过期时间存入Redis
-        redis.opsForValue().set(user.getUsername().toString() , jwt, verifyTime, TimeUnit.HOURS);
+        setHashValue(user.getUsername().toString() , jwt, verifyTime, TimeUnit.HOURS);
 
         return jwt;
     }
@@ -74,7 +77,7 @@ public class JwtService {
         if (user == null) return null;
 
         // 删除redis中的用户名
-        redis.opsForValue().getOperations().delete(String.valueOf(username));
+        deleteHashField(String.valueOf(username));
         // 创建新的Jwt令牌
         String newToken = createJwt(user);
 
@@ -89,7 +92,7 @@ public class JwtService {
      * @param username 要删除的用户
      */
     public void deleteJwtByUsername(String username){
-        redis.opsForValue().getOperations().delete(username);
+        deleteHashField(username);
     }
 
     /**
@@ -99,6 +102,6 @@ public class JwtService {
      * @return JWT字符串
      */
     public String getJwtByUsername(String username) {
-        return redis.opsForValue().get(username);
+        return getHashValue(username);
     }
 }

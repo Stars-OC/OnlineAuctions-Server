@@ -2,9 +2,9 @@ package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.annotation.RequestPage;
-import com.onlineauctions.onlineauctions.pojo.PageInfo;
+import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.PageList;
-import com.onlineauctions.onlineauctions.pojo.Result;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.auction.Auction;
 import com.onlineauctions.onlineauctions.pojo.auction.AuctionLog;
 import com.onlineauctions.onlineauctions.pojo.type.Role;

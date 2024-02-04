@@ -2,7 +2,7 @@ package com.onlineauctions.onlineauctions.service;
 
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.user.User;
-import com.onlineauctions.onlineauctions.service.auth.JwtService;
+import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

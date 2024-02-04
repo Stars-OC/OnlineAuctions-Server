@@ -1,4 +1,4 @@
-package com.onlineauctions.onlineauctions.pojo.request;
+package com.onlineauctions.onlineauctions.pojo;
 
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import lombok.Builder;
