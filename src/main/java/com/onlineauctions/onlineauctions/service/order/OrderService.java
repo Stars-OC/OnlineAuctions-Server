@@ -5,12 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
 import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.pojo.PageList;
-import com.onlineauctions.onlineauctions.pojo.auction.Auction;
-import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.PaidInfo;
 import com.onlineauctions.onlineauctions.pojo.WalletInfo;
+import com.onlineauctions.onlineauctions.pojo.auction.Auction;
+import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
-import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
@@ -152,7 +151,7 @@ public class OrderService {
     @Transactional()
     public OrderInfo createOrderInfoByAuction(long username, long auctionId) {
         // 获取拍卖信息
-        Auction auction = auctionService.getAuctionInfoByAuctionIdWithLock(auctionId);
+        Auction auction = auctionService.getAuctionInfoByAuctionId(auctionId);
         Long cargoId = auction.getCargoId();
         // 获取货物信息
         Cargo cargo = cargoService.cargoInfo(cargoId);

@@ -1,8 +1,6 @@
 package com.onlineauctions.onlineauctions.receiver;
 
 import com.onlineauctions.onlineauctions.config.RabbitMQConfig;
-import com.onlineauctions.onlineauctions.mapper.OrderInfoMapper;
-import com.onlineauctions.onlineauctions.mapper.OrderMapper;
 import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.service.order.OrderService;

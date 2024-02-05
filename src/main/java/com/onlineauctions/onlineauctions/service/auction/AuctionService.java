@@ -153,14 +153,20 @@ public class AuctionService {
         return auctionMapper.selectById(auctionId);
     }
 
-    public Auction getAuctionInfoByAuctionIdWithLock(long auctionId) {
-        return getAuctionInfoByAuctionId(auctionId);
-    }
 
+    /**
+     * 取消销售竞拍
+     * @param cargoId 货物ID
+     */
     public void unsoldAuction(Long cargoId) {
+        // 更新货物状态为未售出
         cargoMapper.updateCargoStatus(cargoId, CargoStatus.UNSOLD.getStatus());
+        // 创建查询包装器
         QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
+        // 设置查询条件为货物ID
         queryWrapper.eq("cargo_id", cargoId);
+        // 更新竞拍状态为未售出
         auctionMapper.update(Auction.builder().status(AuctionStatus.UNSOLD.getStatus()).build(), queryWrapper);
     }
+
 }

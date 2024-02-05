@@ -1,7 +1,7 @@
 package com.onlineauctions.onlineauctions.controller;
 
-import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
+import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.auth.AuthService;
 import com.onlineauctions.onlineauctions.service.redis.JwtService;

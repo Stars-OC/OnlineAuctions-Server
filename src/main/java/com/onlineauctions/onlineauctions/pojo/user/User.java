@@ -6,12 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlineauctions.onlineauctions.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
-
-import java.math.BigDecimal;
 
 
 /**

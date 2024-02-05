@@ -23,6 +23,10 @@ public class GlobalErrorHandler {
             return Result.codeFailure(ResultCode.RC406);
         }
 
+        if (e instanceof InterruptedException){
+            Result.failure(406,"当前访问人数过多，请稍后尝试");
+        }
+
         // 处理其他异常的方法
         log.error(e.getMessage(),e);
         // 返回错误结果

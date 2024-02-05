@@ -2,7 +2,6 @@ package com.onlineauctions.onlineauctions.pojo.user.balance;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.onlineauctions.onlineauctions.pojo.type.OrderStatus;
 import lombok.Builder;
 import lombok.Data;
 

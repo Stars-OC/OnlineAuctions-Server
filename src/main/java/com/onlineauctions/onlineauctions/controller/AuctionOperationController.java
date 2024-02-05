@@ -30,8 +30,9 @@ public class AuctionOperationController {
     }
 
     @PostMapping("/add")
-    public Result<Object> auctionAdditionalPrice(@RequestToken("username")long username, @RequestBody @Validated AuctionOperation auctionOperation){
+    public Result<Object> auctionAdditionalPrice(@RequestToken("username")long username, @RequestBody @Validated AuctionOperation auctionOperation) throws InterruptedException {
         AuctionOperationResult<Object> result = auctionOperationService.auctionAdditionalPrice(username, auctionOperation);
+        log.info("username:{} , post:{} : result{}",username,auctionOperation,result);
         return Result.decide(result.isSuccess(), result.getInfo(), result.getMessage());
     }
 }

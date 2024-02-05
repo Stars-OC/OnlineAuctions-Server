@@ -23,6 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Service
 @Slf4j
@@ -40,7 +44,10 @@ public class AuctionOperationService {
     private final AuctionRedisService auctionRedisService;
 
     private final RabbitMQService rabbitMQService;
+
     private final OrderService orderService;
+
+    private ReadWriteLock redisLock = new ReentrantReadWriteLock();
 
     /**
      * 获取当前拍卖信息
@@ -76,8 +83,7 @@ public class AuctionOperationService {
      * @return 拍卖操作结果对象
      */
     @Transactional
-    public AuctionOperationResult<Object> auctionAdditionalPrice(long username, AuctionOperation auctionOperation) {
-
+    public AuctionOperationResult<Object> auctionAdditionalPrice(long username, AuctionOperation auctionOperation) throws InterruptedException {
         BigDecimal auctionOperationAdditionalPrice = auctionOperation.getAdditionalPrice();
         // 获取拍卖信息
         Long auctionId = auctionOperation.getAuctionId();
@@ -93,10 +99,22 @@ public class AuctionOperationService {
         }
 
         // 加锁
-        // 获取拍卖的实时价格
-        String value = auctionRedisService.getValue(auctionId.toString());
-        if (StringUtils.isEmpty(value))  return AuctionOperationResult.builder().message("当前拍卖已结束").info(auction).build();
+        Lock readLock = redisLock.readLock();
+        Lock writeLock = redisLock.writeLock();
 
+        String value = "";
+        if (readLock.tryLock(1,TimeUnit.SECONDS)){
+            try {
+                value = auctionRedisService.getValue(auctionId.toString());
+                if (StringUtils.isEmpty(value)) return AuctionOperationResult.builder().message("当前拍卖已结束").info(auction).build();
+            } finally {
+                readLock.unlock();
+            }
+
+        }else {
+            return AuctionOperationResult.builder().message("当前访问人数过多，请稍后尝试").info(auction).build();
+        }
+        // 获取拍卖的实时价格
         // 获取一些关于价格的信息
         BigDecimal nowPrice = new BigDecimal(value);
         BigDecimal additionalPrice = auctionOperationAdditionalPrice.subtract(nowPrice);
@@ -106,9 +124,15 @@ public class AuctionOperationService {
             return AuctionOperationResult.builder().message("加价失败，当前加价金额小于加价幅度").info(auction).build();
         }
 
-        // 加价 放入redis中
-        auctionRedisService.setAuctionValue(auctionId.toString(), auctionOperationAdditionalPrice.toString());
-        // 放锁
+        if (writeLock.tryLock(3,TimeUnit.SECONDS)){
+            try {
+                // 加价 放入redis中
+                auctionRedisService.setAuctionValue(auctionId.toString(), auctionOperationAdditionalPrice.toString());
+            } finally {
+                writeLock.unlock();
+            }
+        }
+
         // 记录加价记录
         AuctionLog auctionLog = AuctionLog.builder()
                 .auctionId(auctionId)

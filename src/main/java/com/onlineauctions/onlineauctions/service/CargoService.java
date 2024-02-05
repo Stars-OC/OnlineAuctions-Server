@@ -123,7 +123,4 @@ public class CargoService {
         return cargoMapper.update(cargo,queryWrapper) > 0;
     }
 
-    public void updateCargoStatus(Long cargoId, int status) {
-        cargoMapper.updateCargoStatus(cargoId,status);
-    }
 }
