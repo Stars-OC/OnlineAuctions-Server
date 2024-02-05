@@ -30,8 +30,8 @@ public class AuctionOperationController {
     }
 
     @PostMapping("/add")
-    public Result<AuctionOperationResult> auctionAdditionalPrice(@RequestToken("username")long username, @RequestBody @Validated AuctionOperation auctionOperation){
-        AuctionOperationResult result = auctionOperationService.auctionAdditionalPrice(username, auctionOperation);
-        return result != null? Result.success("操作成功",result):Result.failure("操作失败，拍卖未开始/已结束");
+    public Result<Object> auctionAdditionalPrice(@RequestToken("username")long username, @RequestBody @Validated AuctionOperation auctionOperation){
+        AuctionOperationResult<Object> result = auctionOperationService.auctionAdditionalPrice(username, auctionOperation);
+        return Result.decide(result.isSuccess(), result.getInfo(), result.getMessage());
     }
 }

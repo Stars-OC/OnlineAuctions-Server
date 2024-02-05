@@ -10,6 +10,7 @@ import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.auction.Auction;
 import com.onlineauctions.onlineauctions.pojo.auction.AuctionLog;
 import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
+import com.onlineauctions.onlineauctions.pojo.request.AuctionAndCargo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,7 @@ public class AuctionService {
     }
 
     /**
-     * 获取拍卖信息
+     * 获取拍卖信息 <开启拍卖>
      *
      * @param auctionID 拍卖ID
      * @return 拍卖信息
@@ -89,9 +90,19 @@ public class AuctionService {
         return auction;
     }
 
-    public boolean auditCargo(Auction auction) {
-        auction.setStatus(AuctionStatus.PUBLISHED.getStatus());
-        return auctionMapper.insert(auction) > 0;
+    /**
+     * 审核货物
+     *
+     * @param auctionAndCargo 装载有拍卖和货物的对象
+     * @return 审核是否成功
+     */
+    @Transactional
+    public boolean auditCargo(AuctionAndCargo auctionAndCargo) {
+        Auction auction = auctionAndCargo.getAuction();
+        Cargo cargo = auctionAndCargo.getCargo();
+        boolean a = auctionMapper.insert(auction) > 0;
+        boolean b = cargoMapper.updateById(cargo) > 0;
+        return a && b;
     }
 
     /**

@@ -100,12 +100,12 @@ create index idx_status on auction (status);
 # 拍卖记录
 create table auction_log
 (
-    auction_id BIGINT primary key      not null,
+    auction_id BIGINT      not null,
     bidder     BIGINT   not null comment '出价者',
     price      decimal(18,2) DEFAULT '0.00' comment '出价金额',
     create_at  bigint   not null comment '创建时间/秒级'
 );
 
-
+create index idx_auction_id on auction_log (auction_id);
 create index idx_time on auction_log (create_at);
 create index idx_bidder on auction_log (bidder);
