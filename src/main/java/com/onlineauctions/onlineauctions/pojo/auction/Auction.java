@@ -3,11 +3,13 @@ package com.onlineauctions.onlineauctions.pojo.auction;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @TableName("auction")
 public class Auction {
 

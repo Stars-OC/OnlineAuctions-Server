@@ -13,10 +13,13 @@ import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.request.AuctionAndCargo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
+import com.onlineauctions.onlineauctions.service.redis.AuctionRedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -28,6 +31,8 @@ public class AuctionService {
     private final AuctionMapper auctionMapper;
 
     private final CargoMapper cargoMapper;
+
+    private final AuctionRedisService auctionRedisService;
 
 
     /**
@@ -85,6 +90,8 @@ public class AuctionService {
             // 设置拍卖已开始
             auction.setStatus(AuctionStatus.SELLING.getStatus());
             auctionMapper.updateById(auction);
+            // 设置redis缓存代表已开始
+            auctionRedisService.setValue(auction.getAuctionId().toString(),auction.getStartingPrice().toString(),30, TimeUnit.MINUTES);
         }
 
         return auction;
@@ -99,8 +106,10 @@ public class AuctionService {
     @Transactional
     public boolean auditCargo(AuctionAndCargo auctionAndCargo) {
         Auction auction = auctionAndCargo.getAuction();
+        auction.setStatus(AuctionStatus.PUBLISHED.getStatus());
         Cargo cargo = auctionAndCargo.getCargo();
         boolean a = auctionMapper.insert(auction) > 0;
+        cargo.setCargoId(auction.getCargoId());
         boolean b = cargoMapper.updateById(cargo) > 0;
         return a && b;
     }
@@ -146,5 +155,12 @@ public class AuctionService {
 
     public Auction getAuctionInfoByAuctionIdWithLock(long auctionId) {
         return getAuctionInfoByAuctionId(auctionId);
+    }
+
+    public void unsoldAuction(Long cargoId) {
+        cargoMapper.updateCargoStatus(cargoId, CargoStatus.UNSOLD.getStatus());
+        QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("cargo_id", cargoId);
+        auctionMapper.update(Auction.builder().status(AuctionStatus.UNSOLD.getStatus()).build(), queryWrapper);
     }
 }

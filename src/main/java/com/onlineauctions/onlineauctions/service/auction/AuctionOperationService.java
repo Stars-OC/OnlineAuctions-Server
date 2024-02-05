@@ -2,7 +2,6 @@ package com.onlineauctions.onlineauctions.service.auction;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.mapper.AuctionLogMapper;
 import com.onlineauctions.onlineauctions.mapper.AuctionMapper;
 import com.onlineauctions.onlineauctions.mapper.CargoMapper;
@@ -14,10 +13,9 @@ import com.onlineauctions.onlineauctions.pojo.respond.AuctionOperationResult;
 import com.onlineauctions.onlineauctions.pojo.respond.AuctionStateInfo;
 import com.onlineauctions.onlineauctions.pojo.type.AuctionStatus;
 import com.onlineauctions.onlineauctions.pojo.type.CargoStatus;
-import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
-import com.onlineauctions.onlineauctions.service.order.BalanceService;
 import com.onlineauctions.onlineauctions.service.order.OrderService;
+import com.onlineauctions.onlineauctions.service.order.RabbitMQService;
 import com.onlineauctions.onlineauctions.service.redis.AuctionRedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Permission(Role.USER)
 public class AuctionOperationService {
 
     private final AuctionLogMapper auctionLogMapper;
@@ -43,6 +39,7 @@ public class AuctionOperationService {
 
     private final AuctionRedisService auctionRedisService;
 
+    private final RabbitMQService rabbitMQService;
     private final OrderService orderService;
 
     /**
@@ -54,7 +51,9 @@ public class AuctionOperationService {
     @Transactional
     public AuctionStateInfo getNowAuctionInfo(long auctionId) {
         String key = String.valueOf(auctionId);
+        System.out.println(key);
         String value = auctionRedisService.getValue(key);
+        System.out.println(value);
         if (StringUtils.isEmpty(value))  return null;
 
         Auction auction = auctionMapper.selectById(auctionId);
@@ -108,7 +107,7 @@ public class AuctionOperationService {
         }
 
         // 加价 放入redis中
-        auctionRedisService.setValue(auctionId.toString(), auctionOperationAdditionalPrice.toString(), 5, TimeUnit.SECONDS);
+        auctionRedisService.setAuctionValue(auctionId.toString(), auctionOperationAdditionalPrice.toString());
         // 放锁
         // 记录加价记录
         AuctionLog auctionLog = AuctionLog.builder()
@@ -124,29 +123,40 @@ public class AuctionOperationService {
     /**
      * 拍卖会结束
      *
-     * @param orderId 拍卖会ID
+     * @param auctionId 拍卖会ID
      */
     @Transactional
-    public void cancelAuction(String orderId) {
+    public void cancelAuction(String auctionId) {
+
         // 查找拍卖会信息
-        Auction auction = auctionMapper.selectById(orderId);
+        Auction auction = auctionMapper.selectById(auctionId);
         // 查找最后的加价记录
         QueryWrapper<AuctionLog> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("auction_id", orderId).orderByDesc("create_at");
+        queryWrapper.eq("auction_id", auctionId).orderByDesc("create_at");
         AuctionLog auctionLog = auctionLogMapper.selectOne(queryWrapper);
 
-        // 更新拍卖会状态为已售出
-        auction.setStatus(AuctionStatus.SOLD.getStatus());
         // 更新拍卖会结束时间为当前时间戳
         auction.setEndTime(System.currentTimeMillis() / 1000);
+
+        Long cargoId = auction.getCargoId();
+        // 如果没有交易信息，那说明没人买
+        if (auctionLog == null) {
+            auction.setStatus(AuctionStatus.UNSOLD.getStatus());
+            auctionMapper.updateById(auction);
+            cargoMapper.updateCargoStatus(cargoId, CargoStatus.UNSOLD.getStatus());
+            rabbitMQService.paidOrder(auction.getAuctionId());
+            return;
+        }
+        // 更新拍卖会状态为已售出
+        auction.setStatus(AuctionStatus.SOLD.getStatus());
         // 更新拍卖会落槌价为最后的加价金额
         auction.setHammerPrice(auctionLog.getPrice());
         // 更新拍卖会信息
         auctionMapper.updateById(auction);
 
         // 更新货物状态为已售出
-        cargoMapper.updateCargoStatus(auction.getCargoId(), CargoStatus.SOLD.getStatus());
+        cargoMapper.updateCargoStatus(cargoId, CargoStatus.SOLD.getStatus());
         // 创建订单信息
-        orderService.createOrderInfoByAuction(auctionLog.getBidder(), Long.parseLong(orderId));
+        orderService.createOrderInfoByAuction(auctionLog.getBidder(), Long.parseLong(auctionId));
     }
 }

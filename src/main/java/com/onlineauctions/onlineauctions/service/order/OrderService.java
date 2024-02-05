@@ -133,7 +133,7 @@ public class OrderService {
             orderInfoMapper.updateById(orderInfo);
 
             // 更新货物状态为未售出
-            cargoService.updateCargoStatus(orderInfo.getCargoId(), CargoStatus.UNSOLD.getStatus());
+            auctionService.unsoldAuction(orderInfo.getCargoId());
 
             // 取消订单并支付
             return balanceService.cancelOrderPaid(order.getUsername(), orderInfo.getBalance());

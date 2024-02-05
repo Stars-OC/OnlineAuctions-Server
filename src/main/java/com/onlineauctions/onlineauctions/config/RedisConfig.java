@@ -11,15 +11,6 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfig {
-    private final StringRedisTemplate stringRedisTemplate;
-
-    /**
-     * 配置Redis模板以支持事务。
-     */
-    @Bean
-    public void getRedisTemplate(){
-        stringRedisTemplate.setEnableTransactionSupport(true);
-    }
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {

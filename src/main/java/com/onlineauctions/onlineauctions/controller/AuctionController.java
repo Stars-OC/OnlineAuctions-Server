@@ -86,7 +86,7 @@ public class AuctionController {
      * @return 返回一个Result对象，包含审核结果
      */
     @Permission(Role.AUDIT_ADMIN)
-    @GetMapping("/audit/add")
+    @PostMapping("/audit/add")
     public Result<Auction> auditAuction(@Validated @RequestBody AuctionAndCargo auctionAndCargo) {
         // 调用auctionService的auditCargo方法审核拍卖
         boolean result = auctionService.auditCargo(auctionAndCargo);

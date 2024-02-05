@@ -12,7 +12,7 @@ public class AuctionOperation {
     @NotNull(message = "auctionId不能为空")
     private Long auctionId;
 
-    @NotEmpty(message = "加价幅度不能为空")
+    @NotNull(message = "加价幅度不能为空")
     private BigDecimal additionalPrice;
 
 }

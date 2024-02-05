@@ -27,7 +27,7 @@ public class RedisKeyExpireListener extends KeyExpirationEventMessageListener {
     public void onMessage(Message message, byte[] pattern) {
         String msg = message.toString();
         if (msg.startsWith("auction:")){
-            String auctionId = msg.substring(6);
+            String auctionId = msg.substring(8);
             auctionOperationService.cancelAuction(auctionId);
             log.info("结束拍卖会：{}",auctionId);
         }

@@ -5,9 +5,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class AuctionRedisService extends RedisService {
 
+
+    public static final int TIME = 305;
 
     @Autowired
     private StringRedisTemplate redis;
@@ -15,5 +19,9 @@ public class AuctionRedisService extends RedisService {
     @Autowired
     public AuctionRedisService(StringRedisTemplate redisTemplate) {
         super(redisTemplate, "auction");
+    }
+
+    public void setAuctionValue( String key, String value) {
+        setValue(key,value,TIME, TimeUnit.SECONDS);
     }
 }
