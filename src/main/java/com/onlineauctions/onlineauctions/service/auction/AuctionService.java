@@ -52,11 +52,8 @@ public class AuctionService {
         // 查询已发布 和 拍卖的
         if (published) {
             queryWrapper.between("status", AuctionStatus.PUBLISHED.getStatus(), AuctionStatus.SELLING.getStatus());
-            queryWrapper.orderByAsc("start_time");
-        } else {
-            queryWrapper.orderByAsc("create_time");
         }
-
+        queryWrapper.orderByAsc("start_time");
         // 创建分页对象
         Page<Auction> userPage = new Page<>(pageNum, pageSize);
 

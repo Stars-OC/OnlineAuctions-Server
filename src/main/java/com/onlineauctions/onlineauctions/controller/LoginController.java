@@ -1,7 +1,12 @@
 package com.onlineauctions.onlineauctions.controller;
 
+import com.onlineauctions.onlineauctions.annotation.Permission;
+import com.onlineauctions.onlineauctions.annotation.RequestPage;
+import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
+import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
+import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.auth.AuthService;
 import com.onlineauctions.onlineauctions.service.redis.JwtService;
@@ -71,12 +76,14 @@ public class LoginController {
      * @return 登录结果
      */
     @GetMapping("/logout")
+    @Permission({Role.USER,Role.AUDIT_ADMIN})
     public Result<String> logout(@NotEmpty(message = "用户名不能为空") String username){
 
         jwtService.deleteJwtByUsername(username);
 
         return Result.success("退出成功");
     }
+
 
 
 }

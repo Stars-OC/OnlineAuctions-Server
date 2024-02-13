@@ -1,7 +1,10 @@
 package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
+import com.onlineauctions.onlineauctions.annotation.RequestPage;
 import com.onlineauctions.onlineauctions.annotation.RequestToken;
+import com.onlineauctions.onlineauctions.pojo.PageList;
+import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
@@ -53,6 +56,20 @@ public class UserController {
                 Result.failure("上传用户信息失败 密码错误请重试");
     }
 
+    /**
+     * 获取用户列表
+     *
+     * @param pageInfo 分页信息
+     * @return 返回Result对象，其中包含分页列表信息
+     */
+    @GetMapping("/list")
+    @Permission(Role.ADMIN)
+    public Result<PageList<User>> userList(@RequestPage PageInfo pageInfo) {
+        // 调用服务层方法获取用户列表
+        PageList<User> pageList = userService.getUserList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter());
+        // 返回结果
+        return pageList !=null?Result.success(pageList):Result.failure("获取用户列表失败");
+    }
 
 
 

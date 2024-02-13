@@ -80,9 +80,9 @@ public class CargoController {
      * @return 返回Result对象，其中包含分页列表信息
      */
     @GetMapping("/published/list")
-    public Result<PageList<Cargo>> cargoList(@RequestPage PageInfo pageInfo){
+    public Result<PageList<Cargo>> cargoPublishedList(@RequestPage PageInfo pageInfo){
         // 调用cargoService的cargoList方法，获取cargo列表
-        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),true);
+        PageList<Cargo> pageList = cargoService.cargoListLimit(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),true);
         // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
         return pageList != null? Result.success(pageList) : Result.failure();
     }
@@ -92,7 +92,16 @@ public class CargoController {
     @Permission(Role.AUDIT_ADMIN)
     public Result<PageList<Cargo>> cargoAuditList(@RequestPage PageInfo pageInfo){
         // 调用cargoService的cargoList方法，获取cargo列表
-        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),false);
+        PageList<Cargo> pageList = cargoService.cargoListLimit(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),false);
+        // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
+        return pageList != null? Result.success(pageList) : Result.failure();
+    }
+
+    @GetMapping("/list")
+    @Permission(Role.AUDIT_ADMIN)
+    public Result<PageList<Cargo>> cargoList(@RequestPage PageInfo pageInfo){
+        // 调用cargoService的cargoList方法，获取cargo列表
+        PageList<Cargo> pageList = cargoService.cargoList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),null);
         // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
         return pageList != null? Result.success(pageList) : Result.failure();
     }

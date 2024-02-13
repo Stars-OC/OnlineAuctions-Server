@@ -1,6 +1,11 @@
 package com.onlineauctions.onlineauctions.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
+import com.onlineauctions.onlineauctions.pojo.PageList;
+import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import com.onlineauctions.onlineauctions.utils.AesUtil;
@@ -60,4 +65,25 @@ public class UserService {
         userMapper.updateAvatar(username, thUrl);
     }
 
+    /**
+     * 获取用户列表
+     *
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @param filter 过滤条件
+     * @return 分页列表
+     */
+    public PageList<User> getUserList(int pageNum, int pageSize, String filter) {
+        // 创建查询条件
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
+        queryWrapper.orderByAsc("create_at");
+        // 创建分页对象
+        Page<User> userPage = new Page<>(pageNum, pageSize);
+
+        // 执行查询并获取分页结果
+        Page<User> selectPage = userMapper.selectPage(userPage, queryWrapper);
+        // 返回分页列表
+        return new PageList<>(selectPage);
+    }
 }

@@ -39,28 +39,19 @@ public class CargoService {
      * @param filter 过滤条件
      * @return 分页列表
      */
-    public PageList<Cargo> cargoList(int pageNum, int pageSize, String filter,boolean published) {
+    public PageList<Cargo> cargoListLimit(int pageNum, int pageSize, String filter, boolean published) {
         // 创建查询条件
         QueryWrapper<Cargo> queryWrapper = new QueryWrapper<>();
         // 过滤条件
-        if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
         // 查询已发布 和 拍卖的
         if (published) {
             queryWrapper.between("status", CargoStatus.PUBLISHED.getStatus(), CargoStatus.SELLING.getStatus());
-            queryWrapper.orderByAsc("start_at");
         }
         else {
             queryWrapper.eq("status", CargoStatus.AUDIT.getStatus());
-            queryWrapper.orderByAsc("create_at");
+
         }
-
-        // 创建分页对象
-        Page<Cargo> userPage = new Page<>(pageNum, pageSize);
-
-        // 执行查询并获取分页结果
-        Page<Cargo> selectPage = cargoMapper.selectPage(userPage, queryWrapper);
-        // 返回分页列表
-        return new PageList<>(selectPage);
+        return cargoList(pageNum, pageSize, filter, queryWrapper);
     }
 
     /**
@@ -123,4 +114,16 @@ public class CargoService {
         return cargoMapper.update(cargo,queryWrapper) > 0;
     }
 
+    public PageList<Cargo> cargoList(int pageNum, int pageSize, String filter, QueryWrapper<Cargo> queryWrapper) {
+        if (queryWrapper == null) queryWrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
+        queryWrapper.orderByAsc("create_at");
+        // 创建分页对象
+        Page<Cargo> userPage = new Page<>(pageNum, pageSize);
+
+        // 执行查询并获取分页结果
+        Page<Cargo> selectPage = cargoMapper.selectPage(userPage, queryWrapper);
+        // 返回分页列表
+        return new PageList<>(selectPage);
+    }
 }

@@ -65,19 +65,19 @@ public class AuctionController {
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }
 
-//    /**
-//     * 获取 待审核的 拍卖列表
-//     *
-//     * @return 返回拍卖列表Result对象
-//     */
-//    @Permission(Role.AUDIT_ADMIN)
-//    @GetMapping("/audit/list")
-//    public Result<PageList<Auction>> auditAuctionList(@RequestPage PageInfo pageInfo) {
-//        // 调用auctionService的getAuctionList方法获取拍卖列表
-//        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),false);
-//        // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
-//        return auctionList !=null? Result.success(auctionList) : Result.failure();
-//    }
+    /**
+     * 获取拍卖列表
+     *
+     * @return 返回拍卖列表Result对象
+     */
+    @Permission(Role.AUDIT_ADMIN)
+    @GetMapping("/list")
+    public Result<PageList<Auction>> auditAuctionList(@RequestPage PageInfo pageInfo) {
+        // 调用auctionService的getAuctionList方法获取拍卖列表
+        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),false);
+        // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
+        return auctionList !=null? Result.success(auctionList) : Result.failure();
+    }
 
     /**
      * 审核 添加 拍卖场次
