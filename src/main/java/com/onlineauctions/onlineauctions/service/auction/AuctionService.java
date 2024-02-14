@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -164,6 +165,31 @@ public class AuctionService {
         queryWrapper.eq("cargo_id", cargoId);
         // 更新竞拍状态为未售出
         auctionMapper.update(Auction.builder().status(AuctionStatus.UNSOLD.getStatus()).build(), queryWrapper);
+    }
+
+    /**
+     * 获取用户拥有的拍卖列表
+     *
+     * @param pageNum 页码
+     * @param pageSize 每页显示数量
+     * @param username 用户名
+     * @return 拍卖列表
+     */
+    public PageList<Auction> auctionUserList(int pageNum, int pageSize, long username) {
+        // 调用auctionMapper的auctionListByUserLog方法获取拍卖列表
+        List<Auction> auctions = auctionMapper.auctionListByUserLog(username, pageNum-1, pageSize);
+
+        // 创建PageList对象
+        PageList<Auction> pageList = new PageList<>();
+
+        // 设置总记录数
+        pageList.setCount((long) auctions.size());
+
+        // 设置数据
+        pageList.setData(auctions);
+
+        // 返回拍卖列表
+        return pageList;
     }
 
 }

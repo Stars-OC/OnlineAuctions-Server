@@ -126,4 +126,23 @@ public class CargoService {
         // 返回分页列表
         return new PageList<>(selectPage);
     }
+
+    /**
+     * 获取用户拥有的货物列表
+     *
+     * @param pageNum 页码
+     * @param pageSize 每页显示数量
+     * @param filter 过滤条件
+     * @param username 用户名
+     * @return 货物列表
+     */
+    public PageList<Cargo> cargoUserList(int pageNum, int pageSize, String filter, long username) {
+        // 创建查询条件
+        QueryWrapper<Cargo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("seller", username);
+
+        // 调用cargoList方法获取货物列表
+        return cargoList(pageNum, pageSize, filter, queryWrapper);
+    }
+
 }

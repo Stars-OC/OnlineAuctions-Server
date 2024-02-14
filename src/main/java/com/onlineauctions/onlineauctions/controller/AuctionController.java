@@ -2,6 +2,7 @@ package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.annotation.RequestPage;
+import com.onlineauctions.onlineauctions.annotation.RequestToken;
 import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.auction.Auction;
 import com.onlineauctions.onlineauctions.pojo.auction.AuctionLog;
@@ -75,6 +76,15 @@ public class AuctionController {
     public Result<PageList<Auction>> auditAuctionList(@RequestPage PageInfo pageInfo) {
         // 调用auctionService的getAuctionList方法获取拍卖列表
         PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),false);
+        // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
+        return auctionList !=null? Result.success(auctionList) : Result.failure();
+    }
+
+    @GetMapping("/user/list")
+    @Permission
+    public Result<PageList<Auction>> auctionUserList(@RequestPage PageInfo pageInfo,@RequestToken("username")long username) {
+        // 调用auctionService的getAuctionList方法获取拍卖列表
+        PageList<Auction> auctionList = auctionService.auctionUserList(pageInfo.getPageNum(), pageInfo.getPageSize(),username);
         // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }

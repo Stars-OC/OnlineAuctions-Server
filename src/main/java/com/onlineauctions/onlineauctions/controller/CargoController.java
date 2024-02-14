@@ -106,6 +106,15 @@ public class CargoController {
         return pageList != null? Result.success(pageList) : Result.failure();
     }
 
+    @GetMapping("/user/list")
+    @Permission()
+    public Result<PageList<Cargo>> cargoUserList(@RequestPage PageInfo pageInfo,@RequestToken("username")long username){
+        // 调用cargoService的cargoList方法，获取cargo列表
+        PageList<Cargo> pageList = cargoService.cargoUserList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),username);
+        // 如果pageList不为空，返回Result.success(pageList)，否则返回Result.failure()
+        return pageList != null? Result.success(pageList) : Result.failure();
+    }
+
     @GetMapping("/audit/{cargo}")
     @Permission(Role.AUDIT_ADMIN)
     public Result<String> auditCargo(@PathVariable Long cargo,boolean audit){

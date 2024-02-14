@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.onlineauctions.onlineauctions.mapper.AuctionMapper">
+
+    <select id="auctionListByUserLog" resultType="com.onlineauctions.onlineauctions.pojo.auction.Auction">
+        select a.auction_id, a.cargo_id, a.starting_price, a.additional_price, a.hammer_price, a.start_time, a.end_time, a.status from auction a,(select auction_id from auction_log where bidder = #{username} group by auction_id) al
+        where a.auction_id = al.auction_id limit #{pageNum},#{pageSize};
+
+    </select>
+
+
+</mapper>
