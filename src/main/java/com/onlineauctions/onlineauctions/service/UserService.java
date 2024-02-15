@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.onlineauctions.onlineauctions.mapper.UserMapper;
 import com.onlineauctions.onlineauctions.pojo.PageList;
-import com.onlineauctions.onlineauctions.pojo.auction.Cargo;
 import com.onlineauctions.onlineauctions.pojo.user.User;
 import com.onlineauctions.onlineauctions.service.redis.JwtService;
 import com.onlineauctions.onlineauctions.utils.AesUtil;

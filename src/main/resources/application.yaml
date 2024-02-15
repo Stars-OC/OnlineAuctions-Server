@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   rabbitmq:
     host: localhost
@@ -29,6 +30,9 @@ spring:
       host: 127.0.0.1
       port: 6379
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 
 mybatis-plus:
@@ -54,6 +58,14 @@ dromara:
         storage-path: E:/IdeaProjects/SpringBoot/OnlineAuctions/ # 存储路径
 
 
+
 user:
   # 验证码有效时间 单位hour
   verifyTime: 4
+  noLogin:
+    path:
+      - /auth/login
+      - /auth/register
+    contains:
+      - /api/file/upload/{fileType}
+

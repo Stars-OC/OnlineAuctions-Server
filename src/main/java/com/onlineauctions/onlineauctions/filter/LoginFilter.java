@@ -1,6 +1,7 @@
 package com.onlineauctions.onlineauctions.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlineauctions.onlineauctions.config.LoginConfig;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.ResultCode;
 import com.onlineauctions.onlineauctions.service.redis.JwtService;
@@ -15,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @WebFilter(urlPatterns = "/*")
@@ -22,6 +26,9 @@ public class LoginFilter implements Filter {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private LoginConfig loginConfig;
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
@@ -42,10 +49,10 @@ public class LoginFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // 获取请求的URL
-        String url = request.getRequestURL().toString();
+        String url = request.getRequestURI();
 
-        //TODO 后面利用list或者其他方法放行这些接口
-        if (url.contains("/auth/login") || url.contains("/auth/register") || !url.contains("/api/")) {
+        // 根据配置文件放行端口
+        if (loginConfig.getNoLogin().getPath().contains(url) || match(url)) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }
@@ -106,6 +113,41 @@ public class LoginFilter implements Filter {
         response.setStatus(401);
 
     }
+
+    private boolean contains(String url){
+        Set<String> contains = loginConfig.getNoLogin().getContains();
+        for (String contain : contains) {
+            if (url.startsWith(contain)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断给定的URL是否匹配配置中的不允许登录的URL
+     *
+     * @param url 待判断的URL
+     * @return 如果URL匹配不允许登录的URL则返回true，否则返回false
+     */
+    private boolean match(String url){
+        // 获取不允许登录的URL集合
+        Set<String> contains = loginConfig.getNoLogin().getContains();
+
+        // 遍历不允许登录的URL集合
+        for (String contain : contains) {
+            // 替换URL中的占位符
+            String regex = contain.replaceAll("\\{.*?}", "(\\\\w+)");
+            // 编译正则表达式
+            Pattern pattern = Pattern.compile(regex);
+            // 创建匹配器
+            Matcher matcher = pattern.matcher(url);
+            // 如果匹配成功则返回true
+            if (matcher.find()) return true;
+        }
+
+        // 如果没有匹配成功则返回false
+        return false;
+    }
+
 }
 
 

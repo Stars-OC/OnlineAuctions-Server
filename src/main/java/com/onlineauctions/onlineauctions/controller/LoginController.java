@@ -1,10 +1,7 @@
 package com.onlineauctions.onlineauctions.controller;
 
 import com.onlineauctions.onlineauctions.annotation.Permission;
-import com.onlineauctions.onlineauctions.annotation.RequestPage;
-import com.onlineauctions.onlineauctions.pojo.PageList;
 import com.onlineauctions.onlineauctions.pojo.request.UsernameAndPWD;
-import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
 import com.onlineauctions.onlineauctions.pojo.user.User;
@@ -66,6 +63,7 @@ public class LoginController {
      * @return 验证结果
      */
     @GetMapping("/verify")
+    @Permission({Role.USER,Role.AUDIT_ADMIN})
     public Result<String> verify(){
         return Result.success("token验证成功");
     }

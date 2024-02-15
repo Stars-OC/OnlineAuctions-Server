@@ -9,7 +9,6 @@ import com.onlineauctions.onlineauctions.pojo.request.PayInfo;
 import com.onlineauctions.onlineauctions.pojo.respond.PageInfo;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.type.Role;
-import com.onlineauctions.onlineauctions.pojo.user.balance.Order;
 import com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo;
 import com.onlineauctions.onlineauctions.pojo.user.balance.Wallet;
 import com.onlineauctions.onlineauctions.service.order.OrderService;
