@@ -182,8 +182,11 @@ public class AuctionService {
         // 创建PageList对象
         PageList<Auction> pageList = new PageList<>();
 
+        QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username",username);
+
         // 设置总记录数
-        pageList.setCount((long) auctions.size());
+        pageList.setCount(auctionMapper.selectCount(queryWrapper));
 
         // 设置数据
         pageList.setData(auctions);

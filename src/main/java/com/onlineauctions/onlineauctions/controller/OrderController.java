@@ -49,8 +49,8 @@ public class OrderController {
      * @return 结果对象，包含查询结果和分页列表
      */
     @GetMapping("/user/list")
-    public Result<PageList<Order>> orderList(@RequestToken("username") long username, @RequestPage PageInfo pageInfo) {
-        PageList<Order> pageList = orderService.orderList(username,pageInfo.getPageNum(),pageInfo.getPageSize());
+    public Result<PageList<OrderInfo>> orderList(@RequestToken("username") long username, @RequestPage PageInfo pageInfo) {
+        PageList<OrderInfo> pageList = orderService.orderList(username,pageInfo.getPageNum(),pageInfo.getPageSize());
         return pageList != null ? Result.success("查询成功", pageList): Result.failure("查询失败");
     }
 

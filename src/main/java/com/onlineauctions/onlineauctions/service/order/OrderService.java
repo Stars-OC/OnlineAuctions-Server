@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,17 +65,22 @@ public class OrderService {
      * @param pageSize 每页数量
      * @return 分页列表对象
      */
-    public PageList<Order> orderList(long username, int pageNum, int pageSize) {
+    public PageList<OrderInfo> orderList(long username, int pageNum, int pageSize) {
+        // 获取订单信息列表
+        List<OrderInfo> orderInfoList = orderMapper.getOrderInfoList(username, pageNum - 1, pageSize);
+        // 创建分页列表对象
+        PageList<OrderInfo> pageList = new PageList<>();
+        // 创建查询条件
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", username).orderByDesc("create_at");
-        Page<Order> page = new Page<>(pageNum, pageSize);
-        return new PageList<>(orderMapper.selectPage(page,queryWrapper));
+        queryWrapper.eq("username", username);
+        // 查询订单总数
+        Long selectCount = orderMapper.selectCount(queryWrapper);
+        // 设置分页列表的总数量和数据
+        pageList.setCount(selectCount);
+        pageList.setData(orderInfoList);
+        return pageList;
     }
 
-    public OrderInfo createOrderInfo(OrderInfo order) {
-        orderInfoMapper.insert(order);
-        return order;
-    }
 
     public OrderInfo getOrderInfo(String orderId) {
         return orderInfoMapper.selectById(orderId);

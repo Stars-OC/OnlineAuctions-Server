@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.onlineauctions.onlineauctions.mapper.OrderMapper">
+
+
+    <select id="getOrderInfoList" resultType="com.onlineauctions.onlineauctions.pojo.user.balance.OrderInfo">
+        select oi.order_id, oi.cargo_id, oi.title, oi.description, oi.balance, oi.type, oi.status, oi.create_at from order_info oi,(
+            select order_id from `order` where username = #{username} group by order_id) o
+        where o.order_id = oi.order_id limit #{pageNum},#{pageSize};
+    </select>
+</mapper>
