@@ -127,6 +127,7 @@ public class AuctionService {
         queryWrapper.eq("auction_id", auctionId);
         // 过滤条件
         if (!StringUtils.isEmpty(filter)) queryWrapper.like("bidder", filter);
+        queryWrapper.orderByDesc("create_at");
         // 创建分页对象
         Page<AuctionLog> page = new Page<>(pageNum, pageSize);
         // 执行查询并获取分页结果
