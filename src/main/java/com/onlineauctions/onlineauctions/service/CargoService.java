@@ -114,13 +114,24 @@ public class CargoService {
         return cargoMapper.update(cargo,queryWrapper) > 0;
     }
 
+    /**
+     * 分页查询Cargo对象。
+     *
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @param filter  查询条件
+     * @param queryWrapper 查询条件包装器
+     * @return 分页列表
+     */
     public PageList<Cargo> cargoList(int pageNum, int pageSize, String filter, QueryWrapper<Cargo> queryWrapper) {
+        // 如果queryWrapper为空，则创建一个新的QueryWrapper对象
         if (queryWrapper == null) queryWrapper = new QueryWrapper<>();
+        // 如果filter不为空，则在"name"列上应用LIKE查询
         if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
+        // 按照"create_at"列的升序排序
         queryWrapper.orderByAsc("create_at");
         // 创建分页对象
         Page<Cargo> userPage = new Page<>(pageNum, pageSize);
-
         // 执行查询并获取分页结果
         Page<Cargo> selectPage = cargoMapper.selectPage(userPage, queryWrapper);
         // 返回分页列表

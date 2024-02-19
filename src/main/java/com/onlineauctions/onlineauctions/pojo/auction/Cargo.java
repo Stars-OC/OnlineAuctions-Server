@@ -1,6 +1,7 @@
 package com.onlineauctions.onlineauctions.pojo.auction;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlineauctions.onlineauctions.pojo.respond.Resource;
@@ -8,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-@TableName("cargo")
+@TableName(value = "cargo" ,autoResultMap = true)
 public class Cargo {
 
     @TableId(type = IdType.AUTO)
@@ -19,6 +20,7 @@ public class Cargo {
 
     private String description;
 
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private Resource resource;
 
 //    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
