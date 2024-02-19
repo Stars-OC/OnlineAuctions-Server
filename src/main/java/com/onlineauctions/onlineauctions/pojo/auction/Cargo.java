@@ -21,7 +21,7 @@ public class Cargo {
 
     private Resource resource;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String type;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

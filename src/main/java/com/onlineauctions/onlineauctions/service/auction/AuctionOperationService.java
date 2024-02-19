@@ -56,20 +56,26 @@ public class AuctionOperationService {
      * @return AuctionStateInfo 当前拍卖状态信息，如果不存在则返回null
      */
     @Transactional
-    public AuctionStateInfo getNowAuctionInfo(long auctionId) {
+    public AuctionStateInfo getNowAuctionInfo(long auctionId) throws InterruptedException {
         String key = String.valueOf(auctionId);
-        System.out.println(key);
-        String value = auctionRedisService.getValue(key);
-        System.out.println(value);
-        if (StringUtils.isEmpty(value))  return null;
+        Lock readLock = redisLock.readLock();
 
-        Auction auction = auctionMapper.selectById(auctionId);
+        try {
+            if (readLock.tryLock(1,TimeUnit.SECONDS)){
+                String value = auctionRedisService.getValue(key);
+                if (StringUtils.isEmpty(value))  return null;
 
-        if (auction.getStatus() == AuctionStatus.SELLING.getStatus()) {
-            long keyTime = auctionRedisService.getKeyTime(key);
-            long nowTime = System.currentTimeMillis() / 1000;
-            long endTime = nowTime + keyTime - 5;
-            return new AuctionStateInfo(new BigDecimal(value), keyTime, endTime);
+                Auction auction = auctionMapper.selectById(auctionId);
+
+                if (auction.getStatus() == AuctionStatus.SELLING.getStatus()) {
+                    long keyTime = auctionRedisService.getKeyTime(key);
+                    long nowTime = System.currentTimeMillis() / 1000;
+                    long endTime = nowTime + keyTime - 5;
+                    return new AuctionStateInfo(new BigDecimal(value), keyTime, endTime);
+                }
+            }
+        } finally {
+            readLock.unlock();
         }
 
         return null;
@@ -99,38 +105,31 @@ public class AuctionOperationService {
         }
 
         // 加锁
-        Lock readLock = redisLock.readLock();
         Lock writeLock = redisLock.writeLock();
 
-        String value = "";
-        if (readLock.tryLock(1,TimeUnit.SECONDS)){
-            try {
-                value = auctionRedisService.getValue(auctionId.toString());
+        try {
+            if (writeLock.tryLock(3,TimeUnit.SECONDS)){
+
+
+                String value = auctionRedisService.getValue(auctionId.toString());
                 if (StringUtils.isEmpty(value)) return AuctionOperationResult.builder().message("当前拍卖已结束").info(auction).build();
-            } finally {
-                readLock.unlock();
-            }
 
-        }else {
-            return AuctionOperationResult.builder().message("当前访问人数过多，请稍后尝试").info(auction).build();
-        }
-        // 获取拍卖的实时价格
-        // 获取一些关于价格的信息
-        BigDecimal nowPrice = new BigDecimal(value);
-        BigDecimal additionalPrice = auctionOperationAdditionalPrice.subtract(nowPrice);
-        BigDecimal shouldAdditionalPrice = auction.getAdditionalPrice();
-        // 判断加价幅度是否大于加价幅度
-        if (shouldAdditionalPrice.compareTo(additionalPrice) > 0) {
-            return AuctionOperationResult.builder().message("加价失败，当前加价金额小于加价幅度").info(auction).build();
-        }
-
-        if (writeLock.tryLock(3,TimeUnit.SECONDS)){
-            try {
-                // 加价 放入redis中
+                // 获取拍卖的实时价格
+                // 获取一些关于价格的信息
+                BigDecimal nowPrice = new BigDecimal(value);
+                BigDecimal additionalPrice = auctionOperationAdditionalPrice.subtract(nowPrice);
+                BigDecimal shouldAdditionalPrice = auction.getAdditionalPrice();
+                // 判断加价幅度是否大于加价幅度
+                if (shouldAdditionalPrice.compareTo(additionalPrice) > 0) {
+                    return AuctionOperationResult.builder().message("加价失败，当前加价金额小于加价幅度").info(auction).build();
+                }
                 auctionRedisService.setAuctionValue(auctionId.toString(), auctionOperationAdditionalPrice.toString());
-            } finally {
-                writeLock.unlock();
+
+            }else {
+                return AuctionOperationResult.builder().message("当前访问人数过多，请稍后尝试").info(auction).build();
             }
+        } finally {
+            writeLock.unlock();
         }
 
         // 记录加价记录

@@ -24,7 +24,7 @@ public class AuctionOperationController {
     private final AuctionOperationService auctionOperationService;
 
     @GetMapping("/info/{auctionId}")
-    public Result<AuctionStateInfo> getNowAuctionInfo(@PathVariable long auctionId){
+    public Result<AuctionStateInfo> getNowAuctionInfo(@PathVariable long auctionId) throws InterruptedException {
         AuctionStateInfo nowAuctionInfo = auctionOperationService.getNowAuctionInfo(auctionId);
         return nowAuctionInfo != null? Result.success("获取成功",nowAuctionInfo):Result.failure("获取失败，拍卖未开始/已结束");
     }
