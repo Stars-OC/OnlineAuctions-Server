@@ -106,6 +106,7 @@ public class AuctionService {
         Auction auction = auctionAndCargo.getAuction();
         auction.setStatus(AuctionStatus.PUBLISHED.getStatus());
         Cargo cargo = auctionAndCargo.getCargo();
+        cargo.setCargoId(auction.getCargoId());
         boolean a = auctionMapper.insert(auction) > 0;
         cargo.setCargoId(auction.getCargoId());
         boolean b = cargoMapper.updateById(cargo) > 0;
@@ -196,4 +197,24 @@ public class AuctionService {
         return pageList;
     }
 
+    /**
+     * 更新拍卖和货物信息
+     * @param auctionAndCargo 拍卖和货物对象
+     * @return 更新是否成功
+     */
+    public boolean updateAuction(AuctionAndCargo auctionAndCargo) {
+        Auction auction = auctionAndCargo.getAuction();
+        Cargo cargo = auctionAndCargo.getCargo();
+        cargo.setCargoId(auction.getCargoId());
+
+        // 更新拍卖信息
+        boolean a = auctionMapper.updateById(auction) > 0;
+
+        // 更新货物信息
+        cargo.setCargoId(auction.getCargoId());
+        boolean b = cargoMapper.updateById(cargo) > 0;
+
+        // 返回更新是否成功
+        return a && b;
+    }
 }

@@ -105,6 +105,21 @@ public class AuctionController {
     }
 
     /**
+     * 审核 修改 拍卖状态
+     *
+     * @param auction 拍卖对象
+     * @return 返回一个Result对象，包含审核结果
+     */
+    @Permission(Role.AUDIT_ADMIN)
+    @PostMapping("/update")
+    public Result<Auction> updateAuctionStatus(@Validated @RequestBody AuctionAndCargo auctionAndCargo) {
+        // 调用auctionService的updateAuctionStatus方法审核拍卖
+        boolean result = auctionService.updateAuction(auctionAndCargo);
+        // 如果result不为空，返回一个成功的Result对象，包含result；否则返回一个失败的Result对象
+        return result ? Result.success("修改成功",auctionAndCargo.getAuction()) : Result.failure();
+    }
+
+    /**
      * 获取拍卖日志列表
      *
      * @param auctionId 拍卖ID
