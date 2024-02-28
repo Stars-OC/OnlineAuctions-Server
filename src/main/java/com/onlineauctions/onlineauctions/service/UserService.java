@@ -75,7 +75,7 @@ public class UserService {
     public PageList<User> getUserList(int pageNum, int pageSize, String filter) {
         // 创建查询条件
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
+        if (!StringUtils.isEmpty(filter)) queryWrapper.like("nickname", filter);
         queryWrapper.orderByAsc("create_at");
         // 创建分页对象
         Page<User> userPage = new Page<>(pageNum, pageSize);

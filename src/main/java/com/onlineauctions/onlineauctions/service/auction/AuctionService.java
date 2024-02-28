@@ -106,9 +106,8 @@ public class AuctionService {
         Auction auction = auctionAndCargo.getAuction();
         auction.setStatus(AuctionStatus.PUBLISHED.getStatus());
         Cargo cargo = auctionAndCargo.getCargo();
-        cargo.setCargoId(auction.getCargoId());
+        auction.setCargoId(cargo.getCargoId());
         boolean a = auctionMapper.insert(auction) > 0;
-        cargo.setCargoId(auction.getCargoId());
         boolean b = cargoMapper.updateById(cargo) > 0;
         return a && b;
     }
