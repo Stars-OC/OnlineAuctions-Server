@@ -39,20 +39,25 @@ public class AuctionService {
     /**
      * 获取拍卖列表
      *
-     * @param pageNum 当前页码
-     * @param pageSize 每页数量
-     * @param filter 过滤条件
+     * @param pageNum   当前页码
+     * @param pageSize  每页数量
+     * @param filter    过滤条件
      * @param published 是否只查询已发布的拍卖
+     * @param type
      * @return 拍卖列表
      */
-    public PageList<Auction> auctionList(int pageNum, int pageSize, String filter, boolean published) {
+    public PageList<Auction> auctionList(int pageNum, int pageSize, String filter, boolean published, int type) {
         // 创建查询条件
         QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
         // 过滤条件
         if (!StringUtils.isEmpty(filter)) queryWrapper.like("name", filter);
         // 查询已发布 和 拍卖的
         if (published) {
-            queryWrapper.between("status", AuctionStatus.PUBLISHED.getStatus(), AuctionStatus.SELLING.getStatus());
+            if (type != 0){
+                queryWrapper.eq("status", type);
+            }else {
+                queryWrapper.between("status", AuctionStatus.PUBLISHED.getStatus(), AuctionStatus.SELLING.getStatus());
+            }
         }
         queryWrapper.orderByAsc("start_time");
         // 创建分页对象

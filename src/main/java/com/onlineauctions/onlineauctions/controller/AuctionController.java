@@ -59,9 +59,9 @@ public class AuctionController {
      * @return 返回拍卖列表Result对象
      */
     @GetMapping("/published/list")
-    public Result<PageList<Auction>> publishedAuctionList(@RequestPage PageInfo pageInfo) {
+    public Result<PageList<Auction>> publishedAuctionList(@RequestPage PageInfo pageInfo,@RequestParam(required = false,defaultValue = "0")int type) {
         // 调用auctionService的getAuctionList方法获取拍卖列表
-        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),true);
+        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),true,type);
         // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }
@@ -75,7 +75,7 @@ public class AuctionController {
     @GetMapping("/list")
     public Result<PageList<Auction>> auditAuctionList(@RequestPage PageInfo pageInfo) {
         // 调用auctionService的getAuctionList方法获取拍卖列表
-        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),false);
+        PageList<Auction> auctionList = auctionService.auctionList(pageInfo.getPageNum(), pageInfo.getPageSize(),pageInfo.getFilter(),false,0);
         // 如果auctionList不为空，返回一个成功的Result对象，包含auctionList；否则返回一个失败的Result对象
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }
@@ -107,7 +107,7 @@ public class AuctionController {
     /**
      * 审核 修改 拍卖状态
      *
-     * @param auction 拍卖对象
+     * @param auctionAndCargo 拍卖对象
      * @return 返回一个Result对象，包含审核结果
      */
     @Permission(Role.AUDIT_ADMIN)
