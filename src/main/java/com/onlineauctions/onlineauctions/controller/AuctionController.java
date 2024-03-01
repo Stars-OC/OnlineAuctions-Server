@@ -45,7 +45,7 @@ public class AuctionController {
      * @param cargoId 货物ID
      * @return 拍卖对象
      */
-    @GetMapping("/info/auction/{cargoId}")
+    @GetMapping("/info/cargo/{cargoId}")
     public Result<Auction> getAuctionInfoByCargoId(@PathVariable("cargoId") Long cargoId) {
         // 调用auctionService的getAuctionInfo方法获取拍卖信息
         Auction auction = auctionService.getAuctionInfoByCargoId(cargoId);
