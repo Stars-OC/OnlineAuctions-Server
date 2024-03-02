@@ -69,8 +69,7 @@ public class AuctionOperationService {
 
                 if (auction.getStatus() == AuctionStatus.SELLING.getStatus()) {
                     long keyTime = auctionRedisService.getKeyTime(key);
-                    long nowTime = System.currentTimeMillis() / 1000;
-                    long endTime = nowTime + keyTime - 5;
+                    long endTime = keyTime - 5;
                     return new AuctionStateInfo(new BigDecimal(value), keyTime, endTime);
                 }
             }

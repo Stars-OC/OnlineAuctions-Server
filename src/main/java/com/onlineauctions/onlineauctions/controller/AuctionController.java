@@ -127,7 +127,7 @@ public class AuctionController {
      * @return 返回拍卖日志列表PageList对象
      */
     @Permission(Role.USER)
-    @PostMapping("/info/log/{auctionId}")
+    @GetMapping("/info/log/{auctionId}")
     public Result<PageList<AuctionLog>> auctionLog(@PathVariable("auctionId") Long auctionId, @RequestPage PageInfo pageInfo) {
         // 调用auctionService的getAuctionLog方法获取拍卖日志
         PageList<AuctionLog> pageList = auctionService.auctionLogList(auctionId, pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter());

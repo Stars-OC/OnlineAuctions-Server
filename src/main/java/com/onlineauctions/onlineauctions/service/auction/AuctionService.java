@@ -1,5 +1,6 @@
 package com.onlineauctions.onlineauctions.service.auction;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -188,11 +190,10 @@ public class AuctionService {
         // 创建PageList对象
         PageList<Auction> pageList = new PageList<>();
 
-        QueryWrapper<Auction> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username",username);
+
 
         // 设置总记录数
-        pageList.setCount(auctionMapper.selectCount(queryWrapper));
+        pageList.setCount(auctionMapper.auctionListCountByUserLog(username));
 
         // 设置数据
         pageList.setData(auctions);

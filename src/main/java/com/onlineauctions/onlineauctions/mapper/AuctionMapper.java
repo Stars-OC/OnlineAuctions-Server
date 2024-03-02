@@ -10,4 +10,6 @@ import java.util.List;
 public interface AuctionMapper extends BaseMapper<Auction> {
     List<Auction> auctionListByUserLog(long username, int pageNum, int pageSize);
 
+    Long auctionListCountByUserLog(long username);
+
 }

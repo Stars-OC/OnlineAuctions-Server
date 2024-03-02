@@ -9,6 +9,9 @@
         where a.auction_id = al.auction_id limit #{pageNum},#{pageSize};
 
     </select>
+    <select id="auctionListCountByUserLog" resultType="java.lang.Long">
+        select count(auction_id) from (select auction_id from auction_log where bidder = #{username} group by auction_id) ai;
+    </select>
 
 
 </mapper>
