@@ -1,5 +1,6 @@
 package com.onlineauctions.onlineauctions.controller;
 
+import com.onlineauctions.onlineauctions.annotation.Permission;
 import com.onlineauctions.onlineauctions.annotation.RequestToken;
 import com.onlineauctions.onlineauctions.pojo.respond.Result;
 import com.onlineauctions.onlineauctions.pojo.user.User;
@@ -16,6 +17,7 @@ import org.thciwei.x.file.storage.core.FileStorageService;
 
 @Slf4j
 @RestController
+@Permission
 @RequestMapping("/api/file")
 public class FileController {
 
@@ -28,19 +30,22 @@ public class FileController {
     /**
      * 上传文件
      * @param file  文件
-     * @param user  用户
      * @param fileType  文件类型
      * @return 上传结果
      */
-    @PostMapping("/upload/{fileType}")
+    @PostMapping("/upload/image/{fileType}")
     public Result<String> upload(MultipartFile file,
-                                 @RequestToken User user,
-                                 @PathVariable String fileType) {
+                                 @PathVariable String fileType,
+                                 @RequestToken User user) {
+        long time = System.currentTimeMillis() / 1000;
+        Long username = user.getUsername();
+        if (file == null) return Result.failure("上传失败！ 图片不能没有");
+        String fileName = time + "-" + username + file.getOriginalFilename();
         // 调用文件存储服务，上传文件
         FileInfo fileInfo = fileStorageService.of(file)
                 .setPath(fileType + "/") // 保存到相对路径下，为了方便管理，不需要可以不写
-                .setObjectId(user.getUsername())   // 关联对象ID，为了方便管理，不需要可以不写
-                .putAttr("role", user.getRole()) // 保存一些属性，可以在切面、保存上传记录、自定义存储平台等地方获取使用，不需要可以不写
+                .setName(fileName )
+                .setObjectId(username) // 设置文件对象ID为用户名
                 .upload(); // 将文件上传到对应地方
 
         // 返回上传结果
@@ -56,23 +61,27 @@ public class FileController {
     @PostMapping("/upload/avatar")
     public Result<String> uploadAvatar(MultipartFile file,
                                        @RequestToken User user) {
-
+        if (file == null) return Result.failure("上传失败！ 图片不能没有");
         Long username = user.getUsername();
         // 对文件进行处理和存储
         FileInfo fileInfo = fileStorageService.of(file)
                 .setPath("avatar/") // 设置文件存储路径为"avatar/"
                 .setObjectId(username) // 设置文件对象ID为用户名
-                .setName(username + ".jpg") // 设置文件名为主机名加上".jpg"
+                .setSaveFilename(username + ".jpg")
                 .putAttr("role", user.getRole()) // 设置文件属性为用户角色
                 .image(img -> img.size(1000,1000)) // 对图片进行大小调整到 1000*1000
                 .thumbnail(th -> th.size(200,200)) // 生成一张 200*200 的缩略图
                 .upload(); // 上传文件并返回文件信息
 
+        if (fileInfo == null){
+            return Result.failure("上传失败！");
+        }
         String thUrl = fileInfo.getThUrl();
         // 更新用户头像路径为缩略图路径
         userService.setAvatar(username,thUrl);
+        System.out.println(fileInfo);
         // 返回上传结果，如果文件信息为空表示上传失败，否则返回上传成功和缩略图路径
-        return fileInfo == null ? Result.failure("上传失败！") : Result.success("上传成功", thUrl);
+        return Result.success("上传成功", thUrl);
     }
 
 }

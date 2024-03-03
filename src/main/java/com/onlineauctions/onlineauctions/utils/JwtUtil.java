@@ -50,6 +50,7 @@ public class JwtUtil {
                 .claim("nickname", user.getNickname())
                 // 添加头像声明
                 .claim("avatarUrl", user.getAvatarUrl())
+                .claim("description", user.getDescription())
                 // 添加角色声明
                 .claim("role", user.getRole())
                 // 添加注册时间声明

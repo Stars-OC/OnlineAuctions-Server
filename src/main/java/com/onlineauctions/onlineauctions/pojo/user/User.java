@@ -42,7 +42,7 @@ public class User {
     @TableField(updateStrategy = FieldStrategy.NEVER)
     private Integer role;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
     private Long createAt;
 

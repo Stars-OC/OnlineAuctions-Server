@@ -30,10 +30,12 @@ public class Cargo {
     private Long seller;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @TableField(fill = FieldFill.INSERT,updateStrategy = FieldStrategy.NEVER)
     private Long createAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateAt;
 

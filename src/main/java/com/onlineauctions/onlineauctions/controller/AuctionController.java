@@ -80,8 +80,8 @@ public class AuctionController {
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }
 
-    @GetMapping("/user/list")
     @Permission
+    @GetMapping("/user/list")
     public Result<PageList<Auction>> auctionUserList(@RequestPage PageInfo pageInfo,@RequestToken("username")long username) {
         // 调用auctionService的getAuctionList方法获取拍卖列表
         PageList<Auction> auctionList = auctionService.auctionUserList(pageInfo.getPageNum(), pageInfo.getPageSize(),username);

@@ -96,6 +96,9 @@ public class AuctionOperationService {
 
         // 获取用户钱包信息
         Wallet wallet = walletMapper.selectById(username);
+        if (wallet == null) {
+            return AuctionOperationResult.builder().message("用户钱包不存在,请创建钱包").build();
+        }
         // 获取用户筹码
         BigDecimal fundPrice = wallet.getFund().add(wallet.getMoney());
         // 判断筹码是否充足
@@ -155,7 +158,7 @@ public class AuctionOperationService {
         // 查找最后的加价记录
         QueryWrapper<AuctionLog> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("auction_id", auctionId).orderByDesc("create_at");
-        AuctionLog auctionLog = auctionLogMapper.selectOne(queryWrapper);
+        AuctionLog auctionLog = auctionLogMapper.selectList(queryWrapper).get(0);
 
         // 更新拍卖会结束时间为当前时间戳
         auction.setEndTime(System.currentTimeMillis() / 1000);

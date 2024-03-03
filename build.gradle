@@ -37,6 +37,7 @@ dependencies {
 
     // 文件存储相关
     implementation 'io.github.thciwei:x-file-storage-spring:2.4.1-RELEASE'
+    implementation 'commons-io:commons-io:2.13.0'
 
     // 消息队列
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
