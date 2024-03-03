@@ -79,7 +79,7 @@ public class FileController {
         String thUrl = fileInfo.getThUrl();
         // 更新用户头像路径为缩略图路径
         userService.setAvatar(username,thUrl);
-        System.out.println(fileInfo);
+
         // 返回上传结果，如果文件信息为空表示上传失败，否则返回上传成功和缩略图路径
         return Result.success("上传成功", thUrl);
     }

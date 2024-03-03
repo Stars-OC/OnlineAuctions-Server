@@ -201,13 +201,14 @@ public class OrderService {
         QueryWrapper<Order> queryOrderWrapper = new QueryWrapper<>();
         queryOrderWrapper.eq("order_id", orderId);
         Order order = orderMapper.selectOne(queryOrderWrapper);
-        if (order != null) return PaidInfo.builder().success(false).message("已支付，不要再支付了").build();
+        if (order == null || order.getUsername() != username) return PaidInfo.builder().success(false).message("该订单不属于你/不存在").build();
 
         // 如果订单存在
         if (orderInfo != null) {
             // 获取订单余额
             BigDecimal balance = orderInfo.getBalance();
 
+            if (orderInfo.getStatus() != OrderStatus.PAYING.getStatus()) return PaidInfo.builder().success(false).message("支付失败，当前订单已失效").build();
             // 根据用户ID支付余额
             WalletInfo walletInfo = balanceService.payByUser(username, balance , password);
 
@@ -222,8 +223,6 @@ public class OrderService {
                     // 发送已支付订单消息到RabbitMQ
                     rabbitMQService.paidOrder(orderInfo.getOrderId());
 
-                    // 创建订单日志 这个如果有别的id重复提交会报错
-                    createOrderLog(username, orderId);
 
                     return PaidInfo.builder().success(true).message(walletInfo.getMessage()).orderInfo(orderInfo).build();
                 }else {
