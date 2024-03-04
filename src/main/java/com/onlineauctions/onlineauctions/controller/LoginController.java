@@ -63,7 +63,7 @@ public class LoginController {
      * @return 验证结果
      */
     @GetMapping("/verify")
-    @Permission({Role.USER,Role.AUDIT_ADMIN})
+    @Permission(isAllowAll = true)
     public Result<String> verify(){
         return Result.success("token验证成功");
     }
@@ -74,7 +74,7 @@ public class LoginController {
      * @return 登录结果
      */
     @GetMapping("/logout")
-    @Permission({Role.USER,Role.AUDIT_ADMIN})
+    @Permission(isAllowAll = true)
     public Result<String> logout(@NotEmpty(message = "用户名不能为空") String username){
 
         jwtService.deleteJwtByUsername(username);

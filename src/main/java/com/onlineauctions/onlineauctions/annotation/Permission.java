@@ -40,4 +40,11 @@ public @interface Permission {
      */
     boolean isAllowAdmin() default true;
 
+    /**
+     * 是否允许所有人访问(只能单类/单方法注解有效)
+     * 若单类 多方法需要在方法进行设置
+     * @return boolean
+     */
+    boolean isAllowAll() default false;
+
 }

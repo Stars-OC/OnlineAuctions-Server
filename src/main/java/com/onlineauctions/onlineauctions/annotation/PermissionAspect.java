@@ -148,20 +148,28 @@ public class PermissionAspect {
             flag = true;
         }
 
+        // TODO 到时候将类注解相关的进行操作
 
         // 获取方法对象
         Method method = getMethod(point);
         // 获取方法上的Permission注解
         Permission methodAnnotation = method.getAnnotation(Permission.class);
+
         if (flag || methodAnnotation.isIndividual()) {
             // 如果方法上的Permission注解为isIndividual() true 或者类的isIndividual() true ，则清空角色集合
             roles.clear();
+        }
+
+        if (methodAnnotation.isAllowAll()) {
+            // 如果方法上的Permission注解为isAllowAll() true ，则返回所有role
+            return Role.values();
         }
 
         // 如果都没有限制admin，admin就有权限
         if (classAnnotation.isAllowAdmin() && methodAnnotation.isAllowAdmin()){
             roles.add(Role.ADMIN);
         }
+
         // 将方法上的Permission注解中的角色添加到角色集合中
         Collections.addAll(roles, methodAnnotation.value());
         // 将角色集合转换为数组
@@ -197,6 +205,10 @@ public class PermissionAspect {
         // 获取方法上的Permission注解
         Permission annotation = method.getAnnotation(Permission.class);
         Role[] value = annotation.value();
+        if (annotation.isAllowAll()) {
+            // 如果方法上的Permission注解为isAllowAll() true ，则返回所有role
+            return Role.values();
+        }
         if (annotation.isAllowAdmin()){
             //若没有定义管理员不能访问，就添加管理员
             value = addRole(value,Role.ADMIN);
@@ -216,6 +228,10 @@ public class PermissionAspect {
         // 获取 point 所属类的 Permission 注解
         Permission annotation = point.getTarget().getClass().getAnnotation(Permission.class);
         Role[] value = annotation.value();
+        if (annotation.isAllowAll()) {
+            // 如果方法上的Permission注解为isAllowAll() true ，则返回所有role
+            return Role.values();
+        }
         if (annotation.isAllowAdmin()){
             //若没有定义管理员不能访问，就添加管理员
             value = addRole(value,Role.ADMIN);

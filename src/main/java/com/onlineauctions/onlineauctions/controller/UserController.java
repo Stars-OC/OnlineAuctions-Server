@@ -48,6 +48,7 @@ public class UserController {
      * @return 结果对象
      */
     @PostMapping("/update/info")
+    @Permission(isAllowAll = true)
     public Result<String> updateInfo(@RequestToken("username")long username, @RequestBody @Validated User user){
         user.setUsername(username);
         String jwt = userService.updateInfo(user);

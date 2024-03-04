@@ -31,7 +31,7 @@ public class CargoController {
      * @return 返回Result对象，其中包含添加结果
      */
     @PostMapping("/add")
-    @Permission(Role.USER)
+    @Permission(isAllowAll = true)
     public Result<Cargo> addCargo(@Validated @RequestBody Cargo cargo, @RequestToken("username") Long username){
         // 设置cargo的卖家为username
         cargo.setSeller(username);
@@ -49,7 +49,7 @@ public class CargoController {
      * @return 更新成功返回更新后的货物信息，更新失败返回失败信息
      */
     @PostMapping("/update")
-    @Permission(Role.USER)
+    @Permission(isAllowAll = true)
     public Result<String> updateCargo(@Validated @RequestBody Cargo cargo, @RequestToken("username") Long username){
         // 设置卖家信息
         cargo.setSeller(username);
@@ -107,7 +107,7 @@ public class CargoController {
     }
 
     @GetMapping("/user/list")
-    @Permission()
+    @Permission(isAllowAll = true)
     public Result<PageList<Cargo>> cargoUserList(@RequestPage PageInfo pageInfo,@RequestToken("username")long username){
         // 调用cargoService的cargoList方法，获取cargo列表
         PageList<Cargo> pageList = cargoService.cargoUserList(pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getFilter(),username);

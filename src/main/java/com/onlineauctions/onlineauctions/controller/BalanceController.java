@@ -21,12 +21,12 @@ import java.math.BigDecimal;
 @RequestMapping("/api/user/balance")
 @RequiredArgsConstructor
 @Validated
-@Permission(Role.USER)
 public class BalanceController {
 
     private final BalanceService balanceService;
 
     @PostMapping("/wallet/create")
+    @Permission(isAllowAll = true)
     public Result<Wallet> createWallet(@RequestToken("username") long username,String password) {
         return balanceService.createWallet(username,password)?Result.success("创建钱包成功"):Result.failure("创建钱包失败");
     }
@@ -38,6 +38,7 @@ public class BalanceController {
      * @return 钱包信息Result对象
      */
     @GetMapping("/wallet/info")
+    @Permission(isAllowAll = true)
     public Result<Wallet> walletInfo(@RequestToken("username") long username) {
         Wallet wallet = balanceService.walletInfo(username);
         return wallet!=null ? Result.success("查询成功",wallet):Result.failure("查询失败");

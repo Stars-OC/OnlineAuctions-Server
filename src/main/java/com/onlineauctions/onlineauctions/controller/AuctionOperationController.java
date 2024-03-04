@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auction/operation")
 @RequiredArgsConstructor
 @Validated
-@Permission(Role.USER)
+@Permission(isAllowAll = true)
 public class AuctionOperationController {
 
     private final AuctionOperationService auctionOperationService;

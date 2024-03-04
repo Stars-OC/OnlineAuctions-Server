@@ -80,7 +80,7 @@ public class AuctionController {
         return auctionList !=null? Result.success(auctionList) : Result.failure();
     }
 
-    @Permission
+    @Permission(isAllowAll = true)
     @GetMapping("/user/list")
     public Result<PageList<Auction>> auctionUserList(@RequestPage PageInfo pageInfo,@RequestToken("username")long username) {
         // 调用auctionService的getAuctionList方法获取拍卖列表
@@ -126,7 +126,7 @@ public class AuctionController {
      * @param pageInfo Page相关的封装
      * @return 返回拍卖日志列表PageList对象
      */
-    @Permission(Role.USER)
+    @Permission(isAllowAll = true)
     @GetMapping("/info/log/{auctionId}")
     public Result<PageList<AuctionLog>> auctionLog(@PathVariable("auctionId") Long auctionId, @RequestPage PageInfo pageInfo) {
         // 调用auctionService的getAuctionLog方法获取拍卖日志

@@ -17,7 +17,7 @@ import org.thciwei.x.file.storage.core.FileStorageService;
 
 @Slf4j
 @RestController
-@Permission
+@Permission(isAllowAll = true)
 @RequestMapping("/api/file")
 public class FileController {
 

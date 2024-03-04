@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
 @Validated
-@Permission(Role.USER)
+@Permission(isAllowAll = true)
 public class OrderController {
 
     private final OrderService orderService;
