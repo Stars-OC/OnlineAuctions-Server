@@ -35,7 +35,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
         this.setFieldValByName("updateAt", System.currentTimeMillis()/1000, metaObject);
         this.setFieldValByName("createAt", System.currentTimeMillis()/1000, metaObject);
         // 将密码进行填充
-        this.setFieldValByName("password", AesUtil.DEFAULT_PASSWORD , metaObject);
+        this.setFieldValByName("password", AesUtil.encrypt(String.valueOf(metaObject.getValue("password"))) , metaObject);
         // 将资源进行填充 直接存Json进数据库
     }
 
