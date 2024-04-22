@@ -36,7 +36,7 @@ public class UserService {
         if (user.getNewPassword() != null){
             User oldUser = userMapper.selectById(user.getUsername());
             String newPassword = AesUtil.encrypt(user.getNewPassword());
-            if (oldUser.getPassword().equalsIgnoreCase(newPassword)) {
+            if (!oldUser.getPassword().equalsIgnoreCase(newPassword)) {
                 // 对更新后的用户密码进行加密
                 user.setPassword(newPassword);
             }else {

@@ -102,6 +102,7 @@ public class AuthService {
 
             // 设置默认角色为普通用户
             user.setRole(Role.USER.getRole());
+            user.setPassword(AesUtil.encrypt(user.getPassword()));
             userMapper.insert(user);
 
             log.info("用户 {} 注册成功", username);
